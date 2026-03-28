@@ -36,9 +36,9 @@
 
 ### MCP Server
 
-- [ ] **MCP-01**: MCP server runs as a persistent daemon on the Raspberry Pi
-- [ ] **MCP-02**: MCP server is reachable from Claude on the main machine over LAN (HTTP SSE)
-- [ ] **MCP-03**: MCP server starts automatically on Pi boot via systemd
+- [ ] **MCP-01**: MCP server runs as a persistent daemon on the host machine
+- [ ] **MCP-02**: MCP server is reachable from Claude on the main machine over LAN (Streamable HTTP)
+- [ ] **MCP-03**: MCP server starts automatically on host boot via systemd
 - [ ] **MCP-04**: All board operations serialize per device (no concurrent USB access conflicts)
 - [ ] **MCP-05**: All errors returned to Claude include a code and actionable description
 

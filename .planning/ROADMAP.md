@@ -1,6 +1,6 @@
 # ROADMAP — ESP32 MicroPython Dev Station
 
-**Project:** ESP32 MicroPython Dev Station (MCP server on Raspberry Pi)
+**Project:** ESP32 MicroPython Dev Station (MCP server on Linux host)
 **Created:** 2026-03-28
 **Granularity:** Coarse (3-5 phases)
 **Coverage:** 24/24 v1 requirements mapped
@@ -28,8 +28,8 @@
 **Success Criteria** (what must be TRUE):
 1. Claude can list all ESP32 boards currently connected via USB and identify each board's chip variant (ESP32, S2, S3, C3, C6)
 2. Claude can flash MicroPython firmware onto a connected board via USB, with the correct firmware automatically selected based on chip type
-3. MCP server is running as a persistent daemon on the Raspberry Pi and reachable from Claude on the main machine over LAN (HTTP SSE)
-4. Firmware images are cached locally on the Pi; MCP server continues to function if network is down during flashing
+3. MCP server is running as a persistent daemon on the host machine and reachable from Claude on the main machine over LAN (Streamable HTTP)
+4. Firmware images are cached locally on the host; MCP server continues to function if network is down during flashing
 5. Flash operations fail fast with clear error messages if the chip cannot be identified or the board is unresponsive
 
 **Plans:** 4 plans

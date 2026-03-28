@@ -10,18 +10,18 @@
 
 **Core Value:** Claude can flash, deploy, and debug any connected ESP32 without the user having to leave their editor or remember tooling commands.
 
-**Architecture:** Python MCP server (FastMCP) running on Raspberry Pi; HTTP SSE transport over LAN; subprocess wrappers for esptool (flashing), mpremote (deployment), and pyserial (REPL); per-device serial locking to prevent USB conflicts.
+**Architecture:** Python MCP server (FastMCP) running on a Linux host (Raspberry Pi or any ARM SBC/x86 machine); Streamable HTTP transport over LAN; subprocess wrappers for esptool (flashing), mpremote (deployment), and pyserial (REPL); per-device serial locking to prevent USB conflicts.
 
 **Key Stack:**
-- MCP Server: Python 3.9+ with Anthropic MCP SDK 1.x
-- Flashing: esptool.py (v4.7+)
+- MCP Server: Python 3.10+ with FastMCP (mcp[cli] v1.26+)
+- Flashing: esptool v5+ (command: `esptool`, not `esptool.py`)
 - Deployment: mpremote (v1.23+)
 - Serial I/O: pyserial (v3.5+)
-- Process Management: systemd (Pi native)
-- Transport: HTTP SSE over LAN (not stdio)
+- Process Management: systemd
+- Transport: Streamable HTTP over LAN (`/mcp` endpoint)
 
 **Constraints:**
-- Raspberry Pi only (Linux/ARM)
+- Linux with Python 3.10+ and systemd (Raspberry Pi, ARM SBCs, x86 thin clients, etc.)
 - Trusted LAN only (no internet-facing security required)
 - Mixed ESP32 variants (must auto-detect chip type)
 - Single board operations at a time (serial lock enforces this)
@@ -70,7 +70,7 @@ PHASE 3:    [                                  ]   0%
 
 5. **Subprocess isolation for external tools:** esptool, mpremote, and pyserial called as subprocesses; cleaner than in-process bindings.
 
-6. **HTTP SSE over stdio:** MCP SDK's built-in SSE transport self-contained; no Flask/FastAPI wrapper needed; debuggable with curl.
+6. **Streamable HTTP over stdio:** FastMCP's built-in `transport="streamable-http"` transport; no Flask/FastAPI wrapper needed; debuggable with curl. (SSE transport is deprecated in Claude Code as of 2025.)
 
 7. **Never rely on esptool auto-detect:** Require explicit variant in config; use chip_id as validation step before flash, not source of truth.
 
@@ -94,12 +94,12 @@ None currently. Stack is well-charted. Research confidence is MEDIUM overall, de
 
 ### Todos
 
-- [ ] Before Phase 1: Verify esptool + mpremote work as subprocess wrappers on test Pi
-- [ ] Before Phase 1: Test MCP SDK HTTP SSE transport with hello-world tool
-- [ ] Before Phase 1: Validate systemd service scaffold on target Pi
+- [ ] Before Phase 1: Verify esptool + mpremote work as subprocess wrappers on target host
+- [ ] Before Phase 1: Test FastMCP streamable-http transport with hello-world tool
+- [ ] Before Phase 1: Validate systemd service scaffold on target host
 - [ ] Phase 1: Flash a test board via MCP tool with correct chip detection
 - [ ] Phase 1: Test with multiple ESP32 variants (classic, S3, C3)
-- [ ] Phase 1: Health check curl /sse endpoint from main machine
+- [ ] Phase 1: Health check `curl http://<host>:8000/mcp` from main machine
 
 ---
 
