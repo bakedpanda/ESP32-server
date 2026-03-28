@@ -1,0 +1,18 @@
+# Full implementation in Plan 04 (01-04-PLAN.md)
+[Unit]
+Description=ESP32 MicroPython Dev Station (MCP Server)
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/esp32-station
+ExecStart=/home/pi/esp32-station/venv/bin/python3 /home/pi/esp32-station/mcp_server.py
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=esp32-station
+
+[Install]
+WantedBy=multi-user.target
