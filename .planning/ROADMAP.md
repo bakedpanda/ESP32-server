@@ -32,7 +32,13 @@
 4. Firmware images are cached locally on the Pi; MCP server continues to function if network is down during flashing
 5. Flash operations fail fast with clear error messages if the chip cannot be identified or the board is unresponsive
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Project scaffold: skeleton files, requirements.txt, pytest test stubs
+- [ ] 01-02-PLAN.md — Board detection: USB enumeration, chip identification, state persistence
+- [ ] 01-03-PLAN.md — Firmware flash: firmware cache (7-day TTL), esptool erase+write_flash
+- [ ] 01-04-PLAN.md — MCP server wiring: 4 registered tools, systemd service, LAN verification
 
 ---
 
@@ -78,10 +84,10 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Infrastructure | 0/3 | Not started | - |
+| 1. Foundation & Infrastructure | 0/4 | Planned | - |
 | 2. Core USB Workflows | 0/3 | Not started | - |
 | 3. WiFi & Advanced | 0/3 | Not started | - |
 
 ---
 
-**Last Updated:** 2026-03-28
+**Last Updated:** 2026-03-28 — Phase 1 plans created (4 plans)
