@@ -36,8 +36,8 @@
 
 Plans:
 - [x] 01-01-PLAN.md — Project scaffold: skeleton files, requirements.txt, pytest test stubs
-- [ ] 01-02-PLAN.md — Board detection: USB enumeration, chip identification, state persistence
-- [ ] 01-03-PLAN.md — Firmware flash: firmware cache (7-day TTL), esptool erase+write_flash
+- [x] 01-02-PLAN.md — Board detection: USB enumeration, chip identification, state persistence
+- [x] 01-03-PLAN.md — Firmware flash: firmware cache (7-day TTL), esptool erase+write_flash
 - [ ] 01-04-PLAN.md — MCP server wiring: 4 registered tools, systemd service, LAN verification
 
 ---
