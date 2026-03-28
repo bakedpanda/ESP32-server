@@ -1,0 +1,124 @@
+# STATE — ESP32 MicroPython Dev Station
+
+**Project:** ESP32 MicroPython Dev Station
+**Initialized:** 2026-03-28
+**Current Phase:** Planning complete; ready for Phase 1 planning
+
+---
+
+## Project Reference
+
+**Core Value:** Claude can flash, deploy, and debug any connected ESP32 without the user having to leave their editor or remember tooling commands.
+
+**Architecture:** Python MCP server (FastMCP) running on Raspberry Pi; HTTP SSE transport over LAN; subprocess wrappers for esptool (flashing), mpremote (deployment), and pyserial (REPL); per-device serial locking to prevent USB conflicts.
+
+**Key Stack:**
+- MCP Server: Python 3.9+ with Anthropic MCP SDK 1.x
+- Flashing: esptool.py (v4.7+)
+- Deployment: mpremote (v1.23+)
+- Serial I/O: pyserial (v3.5+)
+- Process Management: systemd (Pi native)
+- Transport: HTTP SSE over LAN (not stdio)
+
+**Constraints:**
+- Raspberry Pi only (Linux/ARM)
+- Trusted LAN only (no internet-facing security required)
+- Mixed ESP32 variants (must auto-detect chip type)
+- Single board operations at a time (serial lock enforces this)
+
+---
+
+## Current Position
+
+**Milestone:** v1 (Core USB + MCP)
+**Current Phase:** Planning (roadmap approval pending)
+**Current Plan:** None (awaiting Phase 1 planning)
+**Status:** Ready to begin Phase 1 planning
+
+**Progress Bar:**
+```
+ROADMAP:    [████████████████████████████████] 100%
+PHASE 1:    [                                  ]   0%
+PHASE 2:    [                                  ]   0%
+PHASE 3:    [                                  ]   0%
+```
+
+---
+
+## Performance Metrics
+
+| Metric | Target | Current | Notes |
+|--------|--------|---------|-------|
+| Phase 1 completion | ~7 days | — | Foundation: MCP + esptool + board detection |
+| Flash success rate | >95% (post-Phase 1) | — | Depends on USB cable quality and chip detection |
+| Deployment reliability | >90% (post-Phase 2) | — | File integrity + SPIFFS space checks critical |
+| REPL response time | <5s per command (Phase 2) | — | Timeout framework needed for robustness |
+
+---
+
+## Accumulated Context
+
+### Key Decisions
+
+1. **MCP server over REST API:** Allows Claude to call tools directly without user copying output; better DX for primary use case.
+
+2. **Pi as deployment hub:** Centralizes USB connections and WiFi bridge; main machine stays clean.
+
+3. **GitHub as code source:** User's existing workflow; Pi pulls latest from repo to deploy.
+
+4. **Serial lock mechanism (per-device):** File-based mutex prevents concurrent USB access; queues operations at MCP layer.
+
+5. **Subprocess isolation for external tools:** esptool, mpremote, and pyserial called as subprocesses; cleaner than in-process bindings.
+
+6. **HTTP SSE over stdio:** MCP SDK's built-in SSE transport self-contained; no Flask/FastAPI wrapper needed; debuggable with curl.
+
+7. **Never rely on esptool auto-detect:** Require explicit variant in config; use chip_id as validation step before flash, not source of truth.
+
+8. **Firmware caching with TTL:** Cache firmware for 7 days; re-download if stale. Balances speed with freshness.
+
+### High-Risk Areas (from Research)
+
+1. **USB reliability & chip detection (Pitfalls 1-3):** Serial permissions, unstable disconnections, chip identification failures. Phase 1 must validate esptool chip detection on multiple variants.
+
+2. **File deployment & SPIFFS constraints (Pitfalls 7-9):** Filesystem full, encoding issues, partial transfers. Phase 2 must include pre-flight checks and post-deployment verification.
+
+3. **Concurrency & error propagation (Pitfalls 13-15):** Concurrent tool calls to same board, timeout handling, generic error messages. Phase 2 must implement per-device locking and structured error codes.
+
+4. **REPL output buffering (Pitfalls 16-18):** Partial output, line ending confusion, blocking reads. Phase 3 must use markers around command/output and non-blocking serial.
+
+5. **OTA reliability over WiFi (Pitfall 11):** WebREPL timeout during large transfer. Phase 3 can limit OTA to <200KB and fallback to USB.
+
+### Blockers
+
+None currently. Stack is well-charted. Research confidence is MEDIUM overall, degrading to MEDIUM-HIGH after Phase 1 validation.
+
+### Todos
+
+- [ ] Before Phase 1: Verify esptool + mpremote work as subprocess wrappers on test Pi
+- [ ] Before Phase 1: Test MCP SDK HTTP SSE transport with hello-world tool
+- [ ] Before Phase 1: Validate systemd service scaffold on target Pi
+- [ ] Phase 1: Flash a test board via MCP tool with correct chip detection
+- [ ] Phase 1: Test with multiple ESP32 variants (classic, S3, C3)
+- [ ] Phase 1: Health check curl /sse endpoint from main machine
+
+---
+
+## Session Continuity
+
+**Last Session:** Roadmap creation (2026-03-28)
+- Analyzed 24 v1 requirements
+- Derived 3-phase structure from research recommendations
+- Validated 100% coverage (no orphans)
+- Created ROADMAP.md with success criteria
+- Created STATE.md (this file)
+- Ready for Phase 1 planning
+
+**Next Session:** Phase 1 planning
+- Decompose Phase 1 goal into executable plans
+- Identify must-haves vs. nice-to-haves
+- Estimate effort per plan
+- Create PLAN-01.md documents
+
+---
+
+**Last Updated:** 2026-03-28
