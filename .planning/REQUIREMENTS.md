@@ -7,18 +7,18 @@
 
 ### Board Management
 
-- [ ] **BOARD-01**: Claude can list all ESP32 boards currently connected via USB
-- [ ] **BOARD-02**: Claude can identify the chip variant of a connected board (ESP32, S2, S3, C3, C6)
+- [x] **BOARD-01**: Claude can list all ESP32 boards currently connected via USB
+- [x] **BOARD-02**: Claude can identify the chip variant of a connected board (ESP32, S2, S3, C3, C6)
 - [ ] **BOARD-03**: Claude can reset a board (soft reset and hard reset)
-- [ ] **BOARD-04**: Board state is persisted across MCP server restarts
+- [x] **BOARD-04**: Board state is persisted across MCP server restarts
 
 ### Firmware Flashing
 
-- [ ] **FLASH-01**: Claude can flash MicroPython firmware onto a board via USB
-- [ ] **FLASH-02**: Correct firmware variant is selected automatically based on detected chip type
-- [ ] **FLASH-03**: Firmware images are cached locally; network not required at flash time
-- [ ] **FLASH-04**: Flash operation fails fast with a clear error if chip cannot be identified
-- [ ] **FLASH-05**: Pre-flight check verifies board is responsive before flashing begins
+- [x] **FLASH-01**: Claude can flash MicroPython firmware onto a board via USB
+- [x] **FLASH-02**: Correct firmware variant is selected automatically based on detected chip type
+- [x] **FLASH-03**: Firmware images are cached locally; network not required at flash time
+- [x] **FLASH-04**: Flash operation fails fast with a clear error if chip cannot be identified
+- [x] **FLASH-05**: Pre-flight check verifies board is responsive before flashing begins
 
 ### Code Deployment
 
@@ -36,9 +36,9 @@
 
 ### MCP Server
 
-- [ ] **MCP-01**: MCP server runs as a persistent daemon on the host machine
-- [ ] **MCP-02**: MCP server is reachable from Claude on the main machine over LAN (Streamable HTTP)
-- [ ] **MCP-03**: MCP server starts automatically on host boot via systemd
+- [x] **MCP-01**: MCP server runs as a persistent daemon on the host machine
+- [x] **MCP-02**: MCP server is reachable from Claude on the main machine over LAN (Streamable HTTP)
+- [x] **MCP-03**: MCP server starts automatically on host boot via systemd
 - [ ] **MCP-04**: All board operations serialize per device (no concurrent USB access conflicts)
 - [ ] **MCP-05**: All errors returned to Claude include a code and actionable description
 
@@ -80,15 +80,15 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BOARD-01 | Phase 1 | Pending |
-| BOARD-02 | Phase 1 | Pending |
+| BOARD-01 | Phase 1 | Complete |
+| BOARD-02 | Phase 1 | Complete |
 | BOARD-03 | Phase 2 | Pending |
-| BOARD-04 | Phase 1 | Pending |
-| FLASH-01 | Phase 1 | Pending |
-| FLASH-02 | Phase 1 | Pending |
-| FLASH-03 | Phase 1 | Pending |
-| FLASH-04 | Phase 1 | Pending |
-| FLASH-05 | Phase 1 | Pending |
+| BOARD-04 | Phase 1 | Complete |
+| FLASH-01 | Phase 1 | Complete |
+| FLASH-02 | Phase 1 | Complete |
+| FLASH-03 | Phase 1 | Complete |
+| FLASH-04 | Phase 1 | Complete |
+| FLASH-05 | Phase 1 | Complete |
 | DEPLOY-01 | Phase 2 | Pending |
 | DEPLOY-02 | Phase 2 | Pending |
 | DEPLOY-03 | Phase 2 | Pending |
@@ -97,9 +97,9 @@
 | REPL-01 | Phase 2 | Pending |
 | REPL-02 | Phase 2 | Pending |
 | REPL-03 | Phase 2 | Pending |
-| MCP-01 | Phase 1 | Pending |
-| MCP-02 | Phase 1 | Pending |
-| MCP-03 | Phase 1 | Pending |
+| MCP-01 | Phase 1 | Complete |
+| MCP-02 | Phase 1 | Complete |
+| MCP-03 | Phase 1 | Complete |
 | MCP-04 | Phase 2 | Pending |
 | MCP-05 | Phase 2 | Pending |
 | OTA-01 | Phase 3 | Pending |
