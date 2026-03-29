@@ -29,7 +29,7 @@ def test_systemd_service_file_content():
 
 
 def test_new_tools_registered():
-    """MCP-04/MCP-05: All 5 new Phase 2 tools are registered in the FastMCP instance."""
+    """MCP-04/MCP-05: All 7 tools (Phase 2 + Phase 3) are registered in the FastMCP instance."""
     import mcp_server
     # FastMCP stores tools in ._tool_manager._tools (dict keyed by tool name)
     # Access via the internal registry — names must match @mcp.tool() function names
@@ -40,6 +40,8 @@ def test_new_tools_registered():
         "exec_repl_command",
         "read_board_serial",
         "reset_board",
+        "deploy_ota_wifi",
+        "pull_and_deploy_github",
     ]
     for name in expected:
         assert name in tool_names, f"MCP tool '{name}' not registered"
@@ -74,3 +76,11 @@ def test_reset_board_invalid_type():
     result = mcp_server.reset_board("/dev/ttyUSB0", reset_type="bogus")
     assert result["error"] == "invalid_reset_type"
     assert "detail" in result
+
+
+def test_systemd_no_stale_comments():
+    """DEBT-02: esp32-station.service line 1 must not be a planning comment."""
+    import pathlib
+    service_path = pathlib.Path("esp32-station.service")
+    first_line = service_path.read_text().splitlines()[0]
+    assert first_line == "[Unit]", f"Expected '[Unit]' on line 1, got: {first_line!r}"

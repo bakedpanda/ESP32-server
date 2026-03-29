@@ -1,4 +1,3 @@
-# Full implementation in Plan 04 (01-04-PLAN.md)
 [Unit]
 Description=ESP32 MicroPython Dev Station (MCP Server)
 After=network.target
