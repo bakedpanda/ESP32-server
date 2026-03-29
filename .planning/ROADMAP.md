@@ -79,7 +79,13 @@ Plans:
 2. OTA updates fall back to USB automatically if WiFi is unavailable or times out
 3. Claude can pull the latest code from a GitHub repository and deploy it to a board with a single MCP tool call
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Wave 0 setup: install venv deps, vendor webrepl_cli.py, write failing test stubs
+- [ ] 03-02-PLAN.md — OTA WiFi module: tools/ota_wifi.py with deploy_ota_wifi() (OTA-01, OTA-02)
+- [ ] 03-03-PLAN.md — GitHub deploy module: tools/github_deploy.py with pull_and_deploy_github() (DEPLOY-05)
+- [ ] 03-04-PLAN.md — MCP wiring: register deploy_ota_wifi and pull_and_deploy_github as @mcp.tool()
 
 ---
 
@@ -89,8 +95,8 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation & Infrastructure | 0/4 | Planned | - |
 | 2. Core USB Workflows | 1/3 | In Progress|  |
-| 3. WiFi & Advanced | 0/3 | Not started | - |
+| 3. WiFi & Advanced | 0/4 | Planned | - |
 
 ---
 
-**Last Updated:** 2026-03-29 — Phase 2 plans created (3 plans)
+**Last Updated:** 2026-03-29 — Phase 3 plans created (4 plans)
