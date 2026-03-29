@@ -44,8 +44,8 @@
 
 ### OTA (WiFi Updates)
 
-- [ ] **OTA-01**: Claude can push a code update to a board over WiFi (WebREPL or equivalent)
-- [ ] **OTA-02**: OTA falls back to USB if WiFi is unavailable
+- [x] **OTA-01**: Claude can push a code update to a board over WiFi (WebREPL or equivalent)
+- [x] **OTA-02**: OTA falls back to USB if WiFi is unavailable
 
 ## v2 Requirements
 
@@ -102,8 +102,8 @@
 | MCP-03 | Phase 1 | Complete |
 | MCP-04 | Phase 2 | Complete |
 | MCP-05 | Phase 2 | Complete |
-| OTA-01 | Phase 3 | Pending |
-| OTA-02 | Phase 3 | Pending |
+| OTA-01 | Phase 3 | Complete |
+| OTA-02 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 24 total
