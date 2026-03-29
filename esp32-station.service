@@ -5,9 +5,9 @@ After=network.target
 
 [Service]
 Type=simple
-User=pi
-WorkingDirectory=/home/pi/esp32-station
-ExecStart=/home/pi/esp32-station/venv/bin/python3 /home/pi/esp32-station/mcp_server.py
+User=esp32
+WorkingDirectory=/home/esp32/esp32-station
+ExecStart=/home/esp32/esp32-station/venv/bin/python3 /home/esp32/esp32-station/mcp_server.py
 Restart=on-failure
 RestartSec=5
 StandardOutput=journal
