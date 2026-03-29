@@ -57,9 +57,12 @@ Plans:
 4. Claude can read recent serial output from a board and can reset a board (soft and hard reset) via USB without requiring manual intervention
 5. All MCP server errors include a unique code and actionable description; operations on the same board serialize correctly with no USB access conflicts
 
-**Plans:** TBD
+**Plans:** 3 plans
 
-**UI hint:** yes
+Plans:
+- [ ] 02-01-PLAN.md — File deployment: deploy_file/deploy_directory via mpremote, space check, integrity verify
+- [ ] 02-02-PLAN.md — REPL + board reset: exec_repl, read_serial, soft_reset, hard_reset via mpremote
+- [ ] 02-03-PLAN.md — MCP wiring + serialization: SerialLock per-port, 5 new tools registered, error code audit
 
 ---
 
@@ -85,9 +88,9 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Infrastructure | 0/4 | Planned | - |
-| 2. Core USB Workflows | 0/3 | Not started | - |
+| 2. Core USB Workflows | 0/3 | Planned | - |
 | 3. WiFi & Advanced | 0/3 | Not started | - |
 
 ---
 
-**Last Updated:** 2026-03-28 — Phase 1 plans created (4 plans)
+**Last Updated:** 2026-03-29 — Phase 2 plans created (3 plans)
