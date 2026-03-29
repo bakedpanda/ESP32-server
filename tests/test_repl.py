@@ -100,3 +100,36 @@ def test_hard_reset_failure():
     assert "error" in result
     assert result["error"] == "hard_reset_failed"
     assert "Could not connect" in result["detail"]
+
+
+# ── DTR/RTS hardware reset tests (REL-01, REL-02) ────────────────────────
+
+
+def test_hard_reset_uses_dtr_rts():
+    """REL-01: hard_reset uses pyserial DTR/RTS signals, not mpremote subprocess."""
+    mock_ser = MagicMock()
+    with patch("tools.repl.serial.Serial", return_value=mock_ser):
+        from tools.repl import hard_reset
+        result = hard_reset(PORT)
+    mock_ser.setRTS.assert_any_call(True)
+    mock_ser.setRTS.assert_any_call(False)
+    assert result == {"port": PORT, "reset": "hard"}
+
+
+def test_hard_reset_fallback_message():
+    """REL-02: hard_reset returns fallback message when serial port fails."""
+    with patch("tools.repl.serial.Serial", side_effect=OSError("Permission denied")):
+        from tools.repl import hard_reset
+        result = hard_reset(PORT)
+    assert result["error"] == "hard_reset_failed"
+    assert "fallback" in result
+    assert "unplug" in result["fallback"].lower()
+
+
+def test_hard_reset_closes_port():
+    """REL-01: hard_reset closes the serial port after reset."""
+    mock_ser = MagicMock()
+    with patch("tools.repl.serial.Serial", return_value=mock_ser):
+        from tools.repl import hard_reset
+        hard_reset(PORT)
+    mock_ser.close.assert_called_once()

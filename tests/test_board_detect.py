@@ -83,3 +83,20 @@ def test_detect_chip_updates_state(mock_esptool_success, tmp_path):
     saved = json.loads(boards_json.read_text())
     assert "/dev/ttyUSB0" in saved
     assert saved["/dev/ttyUSB0"]["chip"] == "ESP32-S3"
+
+
+# ── --chip auto enforcement test (REL-03) ────────────────────────────────
+
+
+def test_chip_id_uses_explicit_chip_auto(mock_esptool_success, tmp_path):
+    """REL-03: detect_chip passes --chip auto to esptool chip_id."""
+    boards_json = tmp_path / "boards.json"
+    with patch("subprocess.run", return_value=mock_esptool_success) as run_mock, \
+         patch("tools.board_detection.BOARDS_JSON", boards_json), \
+         patch("tools.board_detection.STATE_DIR", tmp_path):
+        from tools.board_detection import detect_chip
+        detect_chip("/dev/ttyUSB0")
+    args = run_mock.call_args[0][0]
+    assert "--chip" in args, f"Missing --chip in chip_id call: {args}"
+    chip_idx = args.index("--chip")
+    assert args[chip_idx + 1] == "auto", f"Expected 'auto' after --chip, got: {args[chip_idx + 1]}"
