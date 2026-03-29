@@ -107,3 +107,24 @@ def test_flash_unsupported_chip_returns_error(tmp_path):
         from tools.firmware_flash import flash_firmware
         result = flash_firmware("/dev/ttyUSB0", chip="ESP32-BOGUS")
     assert result["error"] == "unsupported_chip"
+
+
+# ── --chip enforcement tests (REL-03) ────────────────────────────────────
+
+
+def test_esptool_calls_include_chip_flag(tmp_path):
+    """REL-03: All esptool subprocess calls in flash_firmware include --chip flag."""
+    fw_bin = tmp_path / "ESP32_S3.bin"
+    fw_bin.write_bytes(b"fake firmware")
+
+    erase_result = MagicMock(returncode=0, stdout="", stderr="")
+    write_result = MagicMock(returncode=0, stdout="", stderr="")
+
+    with patch("tools.firmware_flash.FIRMWARE_DIR", tmp_path), \
+         patch("subprocess.run", side_effect=[erase_result, write_result]) as run_mock:
+        from tools.firmware_flash import flash_firmware
+        flash_firmware("/dev/ttyUSB0", chip="ESP32-S3")
+
+    for c in run_mock.call_args_list:
+        args = c[0][0]  # first positional arg is the command list
+        assert "--chip" in args, f"Missing --chip in esptool call: {args}"
