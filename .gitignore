@@ -16,6 +16,9 @@ env/
 state/boards.json
 ~/.esp32-station/
 
+# Credentials
+wifi-credentials.md
+
 # Editor
 .idea/
 .vscode/
