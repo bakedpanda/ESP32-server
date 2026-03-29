@@ -25,7 +25,8 @@ Claude can flash, deploy, and debug any connected ESP32 without the user having 
 ## Current State
 
 Shipped v1.0 MVP with 2,446 LOC Python across 11 MCP tools. All 24 v1 requirements satisfied.
-Tech stack: FastMCP, esptool, mpremote, webrepl_cli.py, git subprocess.
+Phase 4 complete — hard reset via DTR/RTS replaces unreliable soft reset, all esptool calls enforce explicit --chip, v1.0 tech debt cleaned up. 56 tests passing.
+Tech stack: FastMCP, esptool, mpremote, pyserial, webrepl_cli.py, git subprocess.
 Deployed on Raspberry Pi at 192.168.10.123 as systemd service.
 
 ## Requirements
@@ -44,12 +45,12 @@ Deployed on Raspberry Pi at 192.168.10.123 as systemd service.
 
 - [ ] One-command Pi setup script (clone, deps, WiFi credential prompts, systemd install)
 - [ ] WiFi credentials stored on Pi, read locally by MCP server
-- [ ] Hard reset (DTR/RTS) as default post-deploy, with power-cycle fallback prompt
+- [x] Hard reset (DTR/RTS) as default post-deploy, with power-cycle fallback prompt — Validated in Phase 4: Hardening
 - [ ] Always full-erase before flash
 - [ ] WiFi config deployment to boards (boot.py with credentials from Pi-local file)
 - [ ] Clear user guidance for all manual steps (BOOT button, power cycle, credentials)
 - [ ] Batch board prep — Claude chains tools at user-chosen readiness level
-- [ ] Tech debt: fix test_detect_chip_success, stale service comment, Phase 3 test assertions, enforce explicit --chip
+- [x] Tech debt: fix test_detect_chip_success, stale service comment, Phase 3 test assertions, enforce explicit --chip — Validated in Phase 4: Hardening
 
 ### Out of Scope
 
@@ -84,7 +85,7 @@ Deployed on Raspberry Pi at 192.168.10.123 as systemd service.
 | host/port on FastMCP() not run() | FastMCP.run() does not accept host/port in mcp>=1.26 | ✓ Applied in Phase 01 |
 | Subprocess isolation | esptool, mpremote, git, webrepl_cli as subprocesses not in-process | ✓ Cleaner error handling, no import conflicts |
 | Error dicts not exceptions | All tools return {error, detail} dicts; never raise to MCP layer | ✓ Consistent structured errors for Claude |
-| Auto soft-reset after deploy | Board runs new code immediately after file/dir/GitHub deploy | ⚠ Unreliable on ESP32 classic; may need hard reset |
+| Auto soft-reset after deploy | Board runs new code immediately after file/dir/GitHub deploy | ✓ Replaced with DTR/RTS hard reset in Phase 4 |
 
 ## Evolution
 
@@ -104,4 +105,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-29 after v1.1 milestone start*
+*Last updated: 2026-03-29 after Phase 4: Hardening completion*
