@@ -5,7 +5,7 @@ milestone_name: Provisioning & Onboarding
 current_phase: 6
 current_plan: Not started
 status: planning
-last_updated: "2026-03-29T19:54:38.246Z"
+last_updated: "2026-03-29T22:30:58.387Z"
 progress:
   total_phases: 4
   completed_phases: 2
@@ -131,7 +131,7 @@ None currently. Stack is well-charted. Research confidence is MEDIUM overall, de
 
 ## Session Continuity
 
-**Last Session:** 2026-03-29
+**Last Session:** 2026-03-29T22:30:58.339Z
 
 - Phase 5 (Board Status) executed: 3 plans across 2 waves
 - Created tools/webrepl_cmd.py, tools/board_status.py, tools/mdns_discovery.py
