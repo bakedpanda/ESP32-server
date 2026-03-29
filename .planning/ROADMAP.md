@@ -55,7 +55,11 @@ Plans:
   1. MCP tool returns firmware version, WiFi connection status, IP address, free memory, and free storage for a connected board
   2. MCP tool detects whether MicroPython is running and the board is responsive, reporting clear issues if not
   3. MCP tool discovers MicroPython boards on the local network via mDNS and returns their IP addresses
-**Plans**: TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 05-01-PLAN.md -- Board status collection and health check with dual USB/WiFi transport
+- [ ] 05-02-PLAN.md -- mDNS discovery of MicroPython boards via python-zeroconf
+- [ ] 05-03-PLAN.md -- Wire 3 new tools into MCP server and update registration tests
 
 ### Phase 6: Provisioning
 **Goal**: Claude can take a raw or used ESP32 from blank chip to WiFi-connected MicroPython board, with credentials managed securely on the Pi
@@ -89,10 +93,10 @@ Phases execute in numeric order: 4 -> 5 -> 6 -> 7
 | 2. Core USB Workflows | v1.0 | 3/3 | Complete | 2026-03-29 |
 | 3. WiFi & Advanced | v1.0 | 4/4 | Complete | 2026-03-29 |
 | 4. Hardening | v1.1 | 1/2 | In Progress | - |
-| 5. Board Status | v1.1 | 0/? | Not started | - |
+| 5. Board Status | v1.1 | 0/3 | Planned | - |
 | 6. Provisioning | v1.1 | 0/? | Not started | - |
 | 7. Setup & Onboarding | v1.1 | 0/? | Not started | - |
 
 ---
 
-**Last Updated:** 2026-03-29 -- Phase 4 planned (2 plans)
+**Last Updated:** 2026-03-29 -- Phase 5 planned (3 plans)
