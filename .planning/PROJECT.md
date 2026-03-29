@@ -25,7 +25,7 @@ Claude can flash, deploy, and debug any connected ESP32 without the user having 
 ## Current State
 
 Shipped v1.0 MVP with 2,446 LOC Python across 14 MCP tools. All 24 v1 requirements satisfied.
-Phase 5 complete — board status/health queries and mDNS discovery via 3 new MCP tools (get_board_status, check_board_health, discover_boards). Dual USB/WiFi transport. 20 new tests (76 total passing).
+Phase 6 complete — provisioning workflow with credentials utility, boot.py template deployment, and user guidance. 15 MCP tools total. deploy_boot_config deploys WiFi+WebREPL+hostname config from Pi-local credentials file. Flash always erases. BOOT button guidance proactive.
 Tech stack: FastMCP, esptool, mpremote, pyserial, webrepl_cli.py, zeroconf, git subprocess.
 Deployed on Raspberry Pi at 192.168.10.123 as systemd service.
 
@@ -44,12 +44,12 @@ Deployed on Raspberry Pi at 192.168.10.123 as systemd service.
 ### Active
 
 - [ ] One-command Pi setup script (clone, deps, WiFi credential prompts, systemd install)
-- [ ] WiFi credentials stored on Pi, read locally by MCP server
+- [x] WiFi credentials stored on Pi, read locally by MCP server — Validated in Phase 6: Provisioning
 - [x] Hard reset (DTR/RTS) as default post-deploy, with power-cycle fallback prompt — Validated in Phase 4: Hardening
-- [ ] Always full-erase before flash
-- [ ] WiFi config deployment to boards (boot.py with credentials from Pi-local file)
-- [ ] Clear user guidance for all manual steps (BOOT button, power cycle, credentials)
-- [ ] Batch board prep — Claude chains tools at user-chosen readiness level
+- [x] Always full-erase before flash — Validated in Phase 6: Provisioning
+- [x] WiFi config deployment to boards (boot.py with credentials from Pi-local file) — Validated in Phase 6: Provisioning
+- [x] Clear user guidance for all manual steps (BOOT button, power cycle, credentials) — Validated in Phase 6: Provisioning
+- [x] Batch board prep — Claude chains tools at user-chosen readiness level — Validated in Phase 6: Provisioning
 - [x] Tech debt: fix test_detect_chip_success, stale service comment, Phase 3 test assertions, enforce explicit --chip — Validated in Phase 4: Hardening
 - [x] Query board firmware version, WiFi status, IP, free memory/storage via MCP tool — Validated in Phase 5: Board Status
 - [x] Detect whether MicroPython is running and board is responsive — Validated in Phase 5: Board Status
@@ -108,4 +108,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-29 after Phase 5: Board Status completion*
+*Last updated: 2026-03-29 after Phase 6: Provisioning completion*
