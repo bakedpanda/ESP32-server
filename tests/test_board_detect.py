@@ -26,9 +26,12 @@ def test_list_boards_filters_non_esp32(mock_serial_ports, non_esp32_port):
     assert all(p["port"] != "/dev/ttyACM0" for p in result)
 
 
-def test_detect_chip_success(mock_esptool_success):
+def test_detect_chip_success(mock_esptool_success, tmp_path):
     """BOARD-02: detect_chip parses 'Chip is ESP32-S3' from esptool stdout."""
-    with patch("subprocess.run", return_value=mock_esptool_success):
+    boards_json = tmp_path / "boards.json"
+    with patch("subprocess.run", return_value=mock_esptool_success), \
+         patch("tools.board_detection.BOARDS_JSON", boards_json), \
+         patch("tools.board_detection.STATE_DIR", tmp_path):
         from tools.board_detection import detect_chip
         result = detect_chip("/dev/ttyUSB0")
     assert result["chip"] == "ESP32-S3"
