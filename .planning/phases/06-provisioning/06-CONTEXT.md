@@ -26,7 +26,7 @@ Out of scope: setup.sh script (Phase 7), MCP registration docs (Phase 7), fleet 
 ### boot.py Generation
 - **D-07:** Template with placeholder injection -- `templates/boot.py.tpl` in the repo with `{{SSID}}`, `{{PASSWORD}}`, `{{WEBREPL_PASSWORD}}`, `{{HOSTNAME}}` placeholders. Deploy tool reads credentials from wifi.json, fills placeholders, writes to temp file, deploys via mpremote.
 - **D-08:** boot.py configures four things: WiFi auto-connect, WebREPL start, mDNS advertisement (`_webrepl._tcp`), and hostname setting.
-- **D-09:** Hostname -- Claude prompts the user for a hostname if one isn't specified in the MicroPython code being deployed. Enables meaningful mDNS identification (e.g. `esp32-kitchen`).
+- **D-09:** Hostname -- Claude prompts the user for a hostname if one isn't specified in the MicroPython code being deployed. Format: `{name}-esp32-{unique_id}` (e.g. `kitchen-esp32-a1b2`). Since mDNS service advertisement (`_webrepl._tcp`) is not available in standard MicroPython firmware (only hostname-based A record discovery works), the hostname is the primary discovery mechanism and must be distinctive.
 - **D-10:** Dedicated MCP tool `deploy_boot_config(port, hostname=None)` -- reads credentials, fills template, deploys as boot.py. Self-contained, one step in provisioning chain.
 - **D-11:** Overwrite silently -- provisioning implies starting fresh (board was just erased and flashed). No confirmation needed for replacing boot.py.
 
