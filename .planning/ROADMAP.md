@@ -83,8 +83,8 @@ Plans:
 
 Plans:
 - [x] 03-01-PLAN.md — Wave 0 setup: install venv deps, vendor webrepl_cli.py, write failing test stubs
-- [ ] 03-02-PLAN.md — OTA WiFi module: tools/ota_wifi.py with deploy_ota_wifi() (OTA-01, OTA-02)
-- [ ] 03-03-PLAN.md — GitHub deploy module: tools/github_deploy.py with pull_and_deploy_github() (DEPLOY-05)
+- [x] 03-02-PLAN.md — OTA WiFi module: tools/ota_wifi.py with deploy_ota_wifi() (OTA-01, OTA-02)
+- [x] 03-03-PLAN.md — GitHub deploy module: tools/github_deploy.py with pull_and_deploy_github() (DEPLOY-05)
 - [ ] 03-04-PLAN.md — MCP wiring: register deploy_ota_wifi and pull_and_deploy_github as @mcp.tool()
 
 ---
