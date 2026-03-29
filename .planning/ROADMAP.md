@@ -73,7 +73,7 @@ Plans:
   5. Tools remain separate and chainable -- Claude asks the user what readiness level they want and chains accordingly
 **Plans:** 2 plans
 Plans:
-- [ ] 06-01-PLAN.md -- Credentials utility (load_credentials) and boot.py template with WiFi + WebREPL + hostname
+- [x] 06-01-PLAN.md -- Credentials utility (load_credentials) and boot.py template with WiFi + WebREPL + hostname
 - [ ] 06-02-PLAN.md -- Wire deploy_boot_config MCP tool, update flash docstring for always-erase, add user_action guidance
 
 ### Phase 7: Setup & Onboarding
@@ -97,7 +97,7 @@ Phases execute in numeric order: 4 -> 5 -> 6 -> 7
 | 3. WiFi & Advanced | v1.0 | 4/4 | Complete | 2026-03-29 |
 | 4. Hardening | v1.1 | 1/2 | In Progress | - |
 | 5. Board Status | v1.1 | 3/3 | Complete | 2026-03-29 |
-| 6. Provisioning | v1.1 | 0/2 | Planned | - |
+| 6. Provisioning | v1.1 | 1/2 | In Progress | - |
 | 7. Setup & Onboarding | v1.1 | 0/? | Not started | - |
 
 ---

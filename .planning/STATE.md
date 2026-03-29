@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Provisioning & Onboarding
 current_phase: 6
-current_plan: Not started
-status: planning
-last_updated: "2026-03-29T22:30:58.387Z"
+current_plan: 1 of 2
+status: executing
+last_updated: "2026-03-29T22:58:20Z"
 progress:
   total_phases: 4
   completed_phases: 2
@@ -49,8 +49,8 @@ progress:
 
 **Milestone:** v1.1 (Provisioning & Onboarding)
 **Current Phase:** 6 — Provisioning
-**Current Plan:** Not started
-**Status:** Ready to plan
+**Current Plan:** 1 of 2 (06-01 complete)
+**Status:** Executing
 
 **Progress Bar:**
 
@@ -131,18 +131,18 @@ None currently. Stack is well-charted. Research confidence is MEDIUM overall, de
 
 ## Session Continuity
 
-**Last Session:** 2026-03-29T22:30:58.339Z
+**Last Session:** 2026-03-29T22:58:20Z
 
-- Phase 5 (Board Status) executed: 3 plans across 2 waves
-- Created tools/webrepl_cmd.py, tools/board_status.py, tools/mdns_discovery.py
-- Wired 3 new MCP tools (14 total): get_board_status, check_board_health, discover_boards
-- 20 new tests (76 total), verification passed
-- zeroconf dependency added
+- Completed 06-01: credentials utility + boot.py template
+- Created tools/credentials.py with load_credentials() error dict pattern
+- Created templates/boot.py.tpl with WiFi + WebREPL + hostname placeholders
+- 6 new credential tests passing
+- TDD: RED/GREEN cycle for credentials module
 
-**Next Session:** Phase 6 planning (Provisioning)
+**Next Session:** Plan 06-02 (deploy_boot_config MCP tool)
 
-- Discuss phase context and approach
-- Plan always-erase flash, WiFi credential management, boot.py deployment
+- Wire credentials + template into deploy_boot_config tool
+- Implement placeholder injection and mpremote deployment
 
 ---
 

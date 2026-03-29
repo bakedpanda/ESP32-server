@@ -10,13 +10,13 @@ Requirements for the Provisioning & Onboarding milestone.
 ### Setup & Onboarding
 
 - [ ] **SETUP-01**: New user can run a single `setup.sh` script that clones the repo, installs dependencies, prompts for WiFi credentials, writes the credentials file, and installs+starts the systemd service
-- [ ] **SETUP-02**: WiFi credentials are stored on the Pi and read locally by the MCP server -- never transmitted through MCP tool calls
+- [x] **SETUP-02**: WiFi credentials are stored on the Pi and read locally by the MCP server -- never transmitted through MCP tool calls
 - [ ] **SETUP-03**: README includes clear instructions for registering the MCP server URL in Claude Code on the main machine
 
 ### Provisioning
 
 - [ ] **PROV-01**: Every firmware flash starts with a full erase (no firmware detection needed)
-- [ ] **PROV-02**: User can deploy WiFi + WebREPL config (boot.py) to a board, with credentials read from the Pi-local file
+- [x] **PROV-02**: User can deploy WiFi + WebREPL config (boot.py) to a board, with credentials read from the Pi-local file
 - [ ] **PROV-03**: Every step requiring user action (BOOT button hold, erase progress, power cycle) includes a clear explanation of what to do and why
 - [ ] **PROV-04**: Tools remain separate so Claude can chain them; for batch prep Claude asks the user what readiness level they want per board
 
@@ -62,10 +62,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | SETUP-01 | Phase 7 | Pending |
-| SETUP-02 | Phase 6 | Pending |
+| SETUP-02 | Phase 6 | Complete |
 | SETUP-03 | Phase 7 | Pending |
 | PROV-01 | Phase 6 | Pending |
-| PROV-02 | Phase 6 | Pending |
+| PROV-02 | Phase 6 | Complete |
 | PROV-03 | Phase 6 | Pending |
 | PROV-04 | Phase 6 | Pending |
 | REL-01 | Phase 4 | Pending |
