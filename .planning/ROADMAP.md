@@ -71,7 +71,10 @@ Plans:
   3. Claude can deploy a boot.py with WiFi, WebREPL, and mDNS advertisement config to a board, reading credentials from the Pi-local file
   4. Every step requiring physical user action (BOOT button, power cycle) includes an explanation of what to do and why
   5. Tools remain separate and chainable -- Claude asks the user what readiness level they want and chains accordingly
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 06-01-PLAN.md -- Credentials utility (load_credentials) and boot.py template with WiFi + WebREPL + hostname
+- [ ] 06-02-PLAN.md -- Wire deploy_boot_config MCP tool, update flash docstring for always-erase, add user_action guidance
 
 ### Phase 7: Setup & Onboarding
 **Goal**: A new user can go from bare Pi to working dev station with one script and clear documentation
@@ -93,10 +96,10 @@ Phases execute in numeric order: 4 -> 5 -> 6 -> 7
 | 2. Core USB Workflows | v1.0 | 3/3 | Complete | 2026-03-29 |
 | 3. WiFi & Advanced | v1.0 | 4/4 | Complete | 2026-03-29 |
 | 4. Hardening | v1.1 | 1/2 | In Progress | - |
-| 5. Board Status | v1.1 | 0/3 | Planned | - |
-| 6. Provisioning | v1.1 | 0/? | Not started | - |
+| 5. Board Status | v1.1 | 3/3 | Complete | 2026-03-29 |
+| 6. Provisioning | v1.1 | 0/2 | Planned | - |
 | 7. Setup & Onboarding | v1.1 | 0/? | Not started | - |
 
 ---
 
-**Last Updated:** 2026-03-29 -- Phase 5 planned (3 plans)
+**Last Updated:** 2026-03-29 -- Phase 6 planned (2 plans)
