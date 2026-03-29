@@ -10,7 +10,7 @@ Requirements for the Provisioning & Onboarding milestone.
 ### Setup & Onboarding
 
 - [ ] **SETUP-01**: New user can run a single `setup.sh` script that clones the repo, installs dependencies, prompts for WiFi credentials, writes the credentials file, and installs+starts the systemd service
-- [ ] **SETUP-02**: WiFi credentials are stored on the Pi and read locally by the MCP server — never transmitted through MCP tool calls
+- [ ] **SETUP-02**: WiFi credentials are stored on the Pi and read locally by the MCP server -- never transmitted through MCP tool calls
 - [ ] **SETUP-03**: README includes clear instructions for registering the MCP server URL in Claude Code on the main machine
 
 ### Provisioning
@@ -50,7 +50,7 @@ Explicitly excluded. Documented to prevent scope creep.
 
 | Feature | Reason |
 |---------|--------|
-| Web UI / dashboard | Claude is the interface — status comes via MCP tool |
+| Web UI / dashboard | Claude is the interface -- status comes via MCP tool |
 | Non-MicroPython firmware | Arduino, ESP-IDF, Zephyr out of scope |
 | Internet-facing security | Trusted LAN only |
 
@@ -60,27 +60,27 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SETUP-01 | — | Pending |
-| SETUP-02 | — | Pending |
-| SETUP-03 | — | Pending |
-| PROV-01 | — | Pending |
-| PROV-02 | — | Pending |
-| PROV-03 | — | Pending |
-| PROV-04 | — | Pending |
-| REL-01 | — | Pending |
-| REL-02 | — | Pending |
-| REL-03 | — | Pending |
-| STAT-01 | — | Pending |
-| STAT-02 | — | Pending |
-| DEBT-01 | — | Pending |
-| DEBT-02 | — | Pending |
-| DEBT-03 | — | Pending |
+| SETUP-01 | Phase 7 | Pending |
+| SETUP-02 | Phase 6 | Pending |
+| SETUP-03 | Phase 7 | Pending |
+| PROV-01 | Phase 6 | Pending |
+| PROV-02 | Phase 6 | Pending |
+| PROV-03 | Phase 6 | Pending |
+| PROV-04 | Phase 6 | Pending |
+| REL-01 | Phase 4 | Pending |
+| REL-02 | Phase 4 | Pending |
+| REL-03 | Phase 4 | Pending |
+| STAT-01 | Phase 5 | Pending |
+| STAT-02 | Phase 5 | Pending |
+| DEBT-01 | Phase 4 | Pending |
+| DEBT-02 | Phase 4 | Pending |
+| DEBT-03 | Phase 4 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 15 total
-- Mapped to phases: 0
-- Unmapped: 15
+- Mapped to phases: 15
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-29*
-*Last updated: 2026-03-29 after initial definition*
+*Last updated: 2026-03-29 after roadmap creation*
