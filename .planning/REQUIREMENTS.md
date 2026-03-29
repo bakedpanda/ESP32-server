@@ -39,8 +39,8 @@
 - [x] **MCP-01**: MCP server runs as a persistent daemon on the host machine
 - [x] **MCP-02**: MCP server is reachable from Claude on the main machine over LAN (Streamable HTTP)
 - [x] **MCP-03**: MCP server starts automatically on host boot via systemd
-- [ ] **MCP-04**: All board operations serialize per device (no concurrent USB access conflicts)
-- [ ] **MCP-05**: All errors returned to Claude include a code and actionable description
+- [x] **MCP-04**: All board operations serialize per device (no concurrent USB access conflicts)
+- [x] **MCP-05**: All errors returned to Claude include a code and actionable description
 
 ### OTA (WiFi Updates)
 
@@ -100,8 +100,8 @@
 | MCP-01 | Phase 1 | Complete |
 | MCP-02 | Phase 1 | Complete |
 | MCP-03 | Phase 1 | Complete |
-| MCP-04 | Phase 2 | Pending |
-| MCP-05 | Phase 2 | Pending |
+| MCP-04 | Phase 2 | Complete |
+| MCP-05 | Phase 2 | Complete |
 | OTA-01 | Phase 3 | Pending |
 | OTA-02 | Phase 3 | Pending |
 
