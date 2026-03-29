@@ -84,7 +84,7 @@ def detect_chip(port: str) -> dict:
     """
     try:
         result = subprocess.run(
-            [ESPTOOL_CMD, "--port", port, "--baud", str(BAUD), "chip_id"],
+            [ESPTOOL_CMD, "--chip", "auto", "--port", port, "--baud", str(BAUD), "chip_id"],
             capture_output=True,
             text=True,
             timeout=30,

@@ -81,9 +81,9 @@ def test_soft_reset_success():
 # ── hard_reset tests ───────────────────────────────────────────────────────
 
 def test_hard_reset_success():
-    """BOARD-03: hard_reset returns reset=hard on success (returncode=0)."""
-    run_result = MagicMock(returncode=0, stdout="", stderr="")
-    with patch("subprocess.run", return_value=run_result):
+    """BOARD-03: hard_reset returns reset=hard on success (via pyserial DTR/RTS)."""
+    mock_ser = MagicMock()
+    with patch("tools.repl.serial.Serial", return_value=mock_ser):
         from tools.repl import hard_reset
         result = hard_reset(PORT)
     assert result["port"] == PORT
@@ -92,9 +92,8 @@ def test_hard_reset_success():
 
 
 def test_hard_reset_failure():
-    """BOARD-03: hard_reset returns error dict when subprocess fails with stderr."""
-    run_result = MagicMock(returncode=1, stdout="", stderr="Could not connect to board")
-    with patch("subprocess.run", return_value=run_result):
+    """BOARD-03: hard_reset returns error dict when serial port open fails."""
+    with patch("tools.repl.serial.Serial", side_effect=OSError("Could not connect to board")):
         from tools.repl import hard_reset
         result = hard_reset(PORT)
     assert "error" in result

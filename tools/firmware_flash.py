@@ -112,7 +112,7 @@ def flash_firmware(port: str, chip: str | None = None) -> dict:
 
     # Step 4: Erase flash
     erase = subprocess.run(
-        [ESPTOOL_CMD, "--port", port, "--baud", str(DETECT_BAUD), "erase_flash"],
+        [ESPTOOL_CMD, "--chip", chip, "--port", port, "--baud", str(DETECT_BAUD), "erase_flash"],
         capture_output=True,
         text=True,
         timeout=60,
@@ -123,7 +123,7 @@ def flash_firmware(port: str, chip: str | None = None) -> dict:
     # Step 5: Write firmware
     write_offset = WRITE_OFFSETS.get(chip, DEFAULT_WRITE_OFFSET)
     write = subprocess.run(
-        [ESPTOOL_CMD, "--port", port, "--baud", str(FLASH_BAUD),
+        [ESPTOOL_CMD, "--chip", chip, "--port", port, "--baud", str(FLASH_BAUD),
          "write_flash", write_offset, str(fw_path)],
         capture_output=True,
         text=True,

@@ -1,8 +1,11 @@
-"""REPL command execution and board reset via mpremote subprocess.
+"""REPL command execution and board reset via mpremote subprocess and pyserial.
 
-Requirements covered: REPL-01, REPL-02, REPL-03, BOARD-03.
+Requirements covered: REPL-01, REPL-02, REPL-03, BOARD-03, REL-01, REL-02.
 """
 import subprocess
+import time
+
+import serial
 
 # ── Constants ──────────────────────────────────────────────────────────────
 MPREMOTE_CMD = "mpremote"
@@ -99,24 +102,28 @@ def soft_reset(port: str) -> dict:
 
 
 def hard_reset(port: str) -> dict:
-    """Perform a hard reset equivalent to pressing the RST button (machine.reset()).
+    """Perform a hardware reset via DTR/RTS signal (equivalent to pressing RST button).
+
+    Opens the serial port with pyserial, pulses RTS to toggle the EN pin,
+    causing the ESP32 to reset. This works regardless of MicroPython state.
 
     On success: returns {"port": port, "reset": "hard"}.
-    On failure (non-zero with stderr): returns {"error": "hard_reset_failed", "detail": ...}.
+    On failure: returns {"error": "hard_reset_failed", "detail": ...,
+                         "fallback": "Unplug the board from USB, wait 3 seconds, then plug it back in"}.
 
     Never raises to callers.
     """
     try:
-        result = subprocess.run(
-            [MPREMOTE_CMD, "connect", port, "exec", "import machine; machine.reset()"],
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
-    except subprocess.TimeoutExpired:
-        return {"error": "hard_reset_failed", "detail": "hard reset timed out after 10s"}
-
-    if result.returncode != 0 and result.stderr.strip():
-        return {"error": "hard_reset_failed", "detail": result.stderr.strip()}
-
-    return {"port": port, "reset": "hard"}
+        ser = serial.Serial(port, baudrate=115200)
+        ser.setRTS(True)    # EN -> LOW (hold chip in reset)
+        time.sleep(0.1)     # 100ms hold
+        ser.setRTS(False)   # EN -> HIGH (chip starts booting)
+        time.sleep(0.05)    # 50ms settle
+        ser.close()
+        return {"port": port, "reset": "hard"}
+    except Exception as exc:
+        return {
+            "error": "hard_reset_failed",
+            "detail": str(exc),
+            "fallback": "Unplug the board from USB, wait 3 seconds, then plug it back in",
+        }
