@@ -42,7 +42,10 @@
   3. Every esptool subprocess call passes an explicit --chip flag (no auto-detect anywhere in codebase)
   4. All existing tests pass, including the fixed test_detect_chip_success and Phase 3 tool assertions
   5. The systemd service file has no stale planning comments
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 04-01-PLAN.md -- Fix tech debt: flaky test, stale service comment, missing Phase 3 tool assertions
+- [ ] 04-02-PLAN.md -- Reliability: DTR/RTS hardware reset, fallback message, --chip enforcement on all esptool calls
 
 ### Phase 5: Board Status
 **Goal**: Claude can check whether a board is alive, what firmware it runs, and its resource state -- without the user running REPL commands manually
@@ -85,11 +88,11 @@ Phases execute in numeric order: 4 -> 5 -> 6 -> 7
 | 1. Foundation & Infrastructure | v1.0 | 4/4 | Complete | 2026-03-28 |
 | 2. Core USB Workflows | v1.0 | 3/3 | Complete | 2026-03-29 |
 | 3. WiFi & Advanced | v1.0 | 4/4 | Complete | 2026-03-29 |
-| 4. Hardening | v1.1 | 0/? | Not started | - |
+| 4. Hardening | v1.1 | 0/2 | Planning complete | - |
 | 5. Board Status | v1.1 | 0/? | Not started | - |
 | 6. Provisioning | v1.1 | 0/? | Not started | - |
 | 7. Setup & Onboarding | v1.1 | 0/? | Not started | - |
 
 ---
 
-**Last Updated:** 2026-03-29 -- v1.1 roadmap created
+**Last Updated:** 2026-03-29 -- Phase 4 planned (2 plans)
