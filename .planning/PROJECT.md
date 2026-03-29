@@ -8,6 +8,20 @@ A Raspberry Pi-based development server for managing ESP32 boards running MicroP
 
 Claude can flash, deploy, and debug any connected ESP32 without the user having to leave their editor or remember tooling commands.
 
+## Current Milestone: v1.1 Provisioning & Onboarding
+
+**Goal:** Seamless path from raw/used ESP32 to running code, reliable resets, one-command Pi setup for new users, and v1.0 tech debt cleanup.
+
+**Target features:**
+- One-command Pi setup script (setup.sh)
+- WiFi credentials on Pi, read locally by MCP server
+- Hard reset (DTR/RTS) with power-cycle fallback
+- Always-erase provisioning
+- WiFi config deployment to boards
+- Clear user guidance for manual steps
+- Batch-friendly separate tools
+- Tech debt cleanup from v1.0 audit
+
 ## Current State
 
 Shipped v1.0 MVP with 2,446 LOC Python across 11 MCP tools. All 24 v1 requirements satisfied.
@@ -28,7 +42,14 @@ Deployed on Raspberry Pi at 192.168.10.123 as systemd service.
 
 ### Active
 
-(None — next milestone requirements TBD)
+- [ ] One-command Pi setup script (clone, deps, WiFi credential prompts, systemd install)
+- [ ] WiFi credentials stored on Pi, read locally by MCP server
+- [ ] Hard reset (DTR/RTS) as default post-deploy, with power-cycle fallback prompt
+- [ ] Always full-erase before flash
+- [ ] WiFi config deployment to boards (boot.py with credentials from Pi-local file)
+- [ ] Clear user guidance for all manual steps (BOOT button, power cycle, credentials)
+- [ ] Batch board prep — Claude chains tools at user-chosen readiness level
+- [ ] Tech debt: fix test_detect_chip_success, stale service comment, Phase 3 test assertions, enforce explicit --chip
 
 ### Out of Scope
 
@@ -83,4 +104,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-29 after v1.0 milestone*
+*Last updated: 2026-03-29 after v1.1 milestone start*

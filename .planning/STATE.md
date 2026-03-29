@@ -1,23 +1,23 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-current_phase: 03
+milestone: v1.1
+milestone_name: Provisioning & Onboarding
+current_phase: 0
 current_plan: Not started
-status: completed
-last_updated: "2026-03-29T17:36:06.767Z"
+status: defining_requirements
+last_updated: "2026-03-29T20:00:00.000Z"
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 11
-  completed_plans: 11
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # STATE — ESP32 MicroPython Dev Station
 
 **Project:** ESP32 MicroPython Dev Station
 **Initialized:** 2026-03-28
-**Current Phase:** 03
+**Current Phase:** Not started (defining requirements)
 
 ---
 
@@ -47,12 +47,13 @@ progress:
 
 ## Current Position
 
-Phase: 02 (core-usb-workflows) — EXECUTING
-Plan: 3 of 3
-**Milestone:** v1 (Core USB + MCP)
-**Current Phase:** Planning (roadmap approval pending)
+Phase: Not started (defining requirements)
+Plan: —
+**Milestone:** v1.1 (Provisioning & Onboarding)
+**Current Phase:** Defining requirements
 **Current Plan:** Not started
-**Status:** v1.0 milestone complete
+**Status:** Defining requirements
+**Last activity:** 2026-03-29 — Milestone v1.1 started
 
 **Progress Bar:**
 
