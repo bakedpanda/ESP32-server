@@ -17,12 +17,12 @@ Claude can flash, deploy, and debug any connected ESP32 without the user having 
 - [x] Deploy MicroPython project files to ESP32 via USB serial — Validated in Phase 02: Core USB Workflows
 - [x] Read serial output and run REPL commands on connected ESP32 boards — Validated in Phase 02: Core USB Workflows
 - [x] Per-port serial locking (concurrent tool calls to same board serialize safely) — Validated in Phase 02: Core USB Workflows
+- [x] Deploy MicroPython project files to ESP32 via OTA over WiFi — Validated in Phase 03: WiFi & Advanced
+- [x] Pull project code from GitHub for deployment — Validated in Phase 03: WiFi & Advanced
 
 ### Active
 
 - [ ] Flash MicroPython firmware onto ESP32 boards via USB (supports mixed variants: classic, S2/S3, C3/C6)
-- [ ] Deploy MicroPython project files to ESP32 via OTA over WiFi
-- [ ] Pull project code from GitHub for deployment
 
 ### Out of Scope
 
@@ -52,7 +52,7 @@ Claude can flash, deploy, and debug any connected ESP32 without the user having 
 |----------|-----------|---------|
 | MCP server over REST API | Allows Claude to call tools directly without user copying output; better DX for the primary use case | Implemented — streamable-http on port 8000 |
 | Pi as deployment hub | Centralizes USB connections and WiFi bridge; main machine stays clean | Implemented — systemd daemon, auto-start on boot |
-| GitHub as code source | User's existing workflow; Pi pulls latest from repo to deploy | — Pending |
+| GitHub as code source | User's existing workflow; Pi pulls latest from repo to deploy | Implemented — pull_and_deploy_github MCP tool |
 | host/port on FastMCP() not run() | FastMCP.run() does not accept host/port in mcp>=1.26 | Applied in Phase 01 |
 
 ## Evolution
@@ -73,4 +73,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-29 — Phase 02 complete: file deploy, REPL, reset, serial locking, 9 MCP tools registered*
+*Last updated: 2026-03-29 — Phase 03 complete: OTA WiFi deploy, GitHub deploy, 11 MCP tools registered*
