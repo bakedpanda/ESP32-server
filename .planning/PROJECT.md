@@ -24,9 +24,9 @@ Claude can flash, deploy, and debug any connected ESP32 without the user having 
 
 ## Current State
 
-Shipped v1.0 MVP with 2,446 LOC Python across 11 MCP tools. All 24 v1 requirements satisfied.
-Phase 4 complete — hard reset via DTR/RTS replaces unreliable soft reset, all esptool calls enforce explicit --chip, v1.0 tech debt cleaned up. 56 tests passing.
-Tech stack: FastMCP, esptool, mpremote, pyserial, webrepl_cli.py, git subprocess.
+Shipped v1.0 MVP with 2,446 LOC Python across 14 MCP tools. All 24 v1 requirements satisfied.
+Phase 5 complete — board status/health queries and mDNS discovery via 3 new MCP tools (get_board_status, check_board_health, discover_boards). Dual USB/WiFi transport. 20 new tests (76 total passing).
+Tech stack: FastMCP, esptool, mpremote, pyserial, webrepl_cli.py, zeroconf, git subprocess.
 Deployed on Raspberry Pi at 192.168.10.123 as systemd service.
 
 ## Requirements
@@ -51,6 +51,9 @@ Deployed on Raspberry Pi at 192.168.10.123 as systemd service.
 - [ ] Clear user guidance for all manual steps (BOOT button, power cycle, credentials)
 - [ ] Batch board prep — Claude chains tools at user-chosen readiness level
 - [x] Tech debt: fix test_detect_chip_success, stale service comment, Phase 3 test assertions, enforce explicit --chip — Validated in Phase 4: Hardening
+- [x] Query board firmware version, WiFi status, IP, free memory/storage via MCP tool — Validated in Phase 5: Board Status
+- [x] Detect whether MicroPython is running and board is responsive — Validated in Phase 5: Board Status
+- [x] Discover MicroPython boards on LAN via mDNS — Validated in Phase 5: Board Status
 
 ### Out of Scope
 
@@ -105,4 +108,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-29 after Phase 4: Hardening completion*
+*Last updated: 2026-03-29 after Phase 5: Board Status completion*
