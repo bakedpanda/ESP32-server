@@ -112,6 +112,40 @@ def test_flash_unsupported_chip_returns_error(tmp_path):
 # ── --chip enforcement tests (REL-03) ────────────────────────────────────
 
 
+def test_erase_always_called(tmp_path):
+    """PROV-01: flash_firmware always performs erase_flash before write_flash."""
+    fw_bin = tmp_path / "ESP32_S3.bin"
+    fw_bin.write_bytes(b"fake firmware")
+
+    erase_result = MagicMock(returncode=0, stdout="", stderr="")
+    write_result = MagicMock(returncode=0, stdout="", stderr="")
+
+    with patch("tools.firmware_flash.FIRMWARE_DIR", tmp_path), \
+         patch("subprocess.run", side_effect=[erase_result, write_result]) as run_mock:
+        from tools.firmware_flash import flash_firmware
+        result = flash_firmware("/dev/ttyUSB0", chip="ESP32-S3")
+
+    calls = run_mock.call_args_list
+    assert len(calls) == 2, f"Expected 2 subprocess calls, got {len(calls)}"
+    erase_call_args = calls[0][0][0]
+    assert "erase_flash" in erase_call_args, "First subprocess call must be erase_flash"
+    write_call_args = calls[1][0][0]
+    assert "write_flash" in write_call_args, "Second subprocess call must be write_flash"
+
+
+def test_user_action_guidance():
+    """PROV-03: flash_micropython returns user_action when erase fails (board not in flash mode)."""
+    import mcp_server
+    with patch.object(mcp_server, "flash_firmware", return_value={"error": "erase_failed", "detail": "Failed to connect"}):
+        result = mcp_server.flash_micropython("/dev/ttyUSB0", chip="ESP32-S3")
+
+    assert result["error"] == "erase_failed"
+    assert "user_action" in result
+    assert "BOOT" in result["user_action"]
+    assert "reason" in result
+    assert "bootloader" in result["reason"]
+
+
 def test_esptool_calls_include_chip_flag(tmp_path):
     """REL-03: All esptool subprocess calls in flash_firmware include --chip flag."""
     fw_bin = tmp_path / "ESP32_S3.bin"

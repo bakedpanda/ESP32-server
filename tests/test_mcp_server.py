@@ -29,7 +29,7 @@ def test_systemd_service_file_content():
 
 
 def test_new_tools_registered():
-    """MCP-04/MCP-05: All 14 tools (Phase 2 + Phase 3 + Phase 5) are registered in the FastMCP instance."""
+    """MCP-04/MCP-05: All 15 tools (Phase 2 + Phase 3 + Phase 5 + Phase 6) are registered."""
     import mcp_server
     # FastMCP stores tools in ._tool_manager._tools (dict keyed by tool name)
     # Access via the internal registry — names must match @mcp.tool() function names
@@ -49,6 +49,7 @@ def test_new_tools_registered():
         "get_board_status",
         "check_board_health",
         "discover_boards",
+        "deploy_boot_config",
     ]
     for name in expected:
         assert name in tool_names, f"MCP tool '{name}' not registered"

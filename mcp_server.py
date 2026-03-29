@@ -18,6 +18,7 @@ from tools.ota_wifi import deploy_ota_wifi as _deploy_ota_wifi
 from tools.github_deploy import pull_and_deploy_github as _pull_and_deploy_github
 from tools.board_status import get_status as _get_status, check_health as _check_health
 from tools.mdns_discovery import discover_boards as _discover_boards
+from tools.boot_deploy import deploy_boot_config as _deploy_boot_config
 
 mcp = FastMCP("esp32-station", host="0.0.0.0", port=8000)
 
@@ -51,6 +52,15 @@ def identify_chip(port: str) -> dict:
 def flash_micropython(port: str, chip: str | None = None) -> dict:
     """Flash MicroPython firmware onto the board at the given serial port.
 
+    IMPORTANT: Always performs a full erase before writing firmware. This ensures
+    no partial flash states from previous firmware. The board will be completely
+    blank after erase and before the new firmware is written.
+
+    The user must hold the BOOT button on the ESP32, then briefly press EN (reset)
+    while still holding BOOT. Release BOOT when 'Connecting...' appears. The BOOT
+    button is usually the smaller of two buttons on the board. This puts the chip
+    into bootloader/download mode required for flashing.
+
     Automatically selects the correct firmware for the chip variant.
     Firmware is cached locally (7-day TTL); network not required if cache is fresh.
 
@@ -64,7 +74,19 @@ def flash_micropython(port: str, chip: str | None = None) -> dict:
         port: Serial port path, e.g. "/dev/ttyUSB0"
         chip: Optional chip variant override (e.g. "ESP32-S3"). Auto-detected if None.
     """
-    return flash_firmware(port, chip=chip)
+    result = flash_firmware(port, chip=chip)
+    if result.get("error") == "erase_failed":
+        result["user_action"] = (
+            "Hold the BOOT button on the ESP32 board, then briefly press "
+            "the EN (reset) button while still holding BOOT. Release BOOT "
+            "when you see 'Connecting...' in the output. The BOOT button is "
+            "usually the smaller of two buttons on the board."
+        )
+        result["reason"] = (
+            "ESP32 must be in bootloader mode for firmware flashing. "
+            "The BOOT button forces the chip into download mode."
+        )
+    return result
 
 
 @mcp.tool()
@@ -289,6 +311,36 @@ def discover_boards(timeout: int = 3) -> list[dict] | dict:
     Returns list of {hostname, ip, port} for each board found. Empty list if none found.
     """
     return _discover_boards(timeout=timeout)
+
+
+@mcp.tool()
+def deploy_boot_config(port: str, hostname: str | None = None) -> dict:
+    """Deploy WiFi + WebREPL + hostname configuration as boot.py to an ESP32 board.
+
+    Reads WiFi credentials from the Pi-local file (/etc/esp32-station/wifi.json).
+    Credentials never appear in MCP tool calls -- they are injected server-side.
+
+    This is a standalone provisioning step. Chain with flash_micropython (before)
+    and check_board_health (after) for full provisioning. Five readiness levels:
+      1. Flash only: flash_micropython
+      2. Flash + WiFi: flash_micropython -> deploy_boot_config
+      3. Full (WiFi): flash_micropython -> deploy_boot_config -> deploy_file_to_board
+      4. WiFi config only: deploy_boot_config (board already flashed)
+      5. Full (USB only): flash_micropython -> deploy_file_to_board (no WiFi)
+
+    Always verify with check_board_health() after provisioning.
+
+    Args:
+        port: Serial port path, e.g. "/dev/ttyUSB0"
+        hostname: Board hostname for mDNS discovery (default: "esp32").
+                  Sets network.hostname() so board is reachable at hostname.local.
+                  Ask the user for a meaningful name like "esp32-kitchen".
+    """
+    try:
+        with SerialLock(port):
+            return _deploy_boot_config(port, hostname=hostname)
+    except TimeoutError as e:
+        return {"error": "serial_lock_timeout", "detail": str(e)}
 
 
 if __name__ == "__main__":
