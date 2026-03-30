@@ -46,19 +46,17 @@ def _make_mock_sock(ws_payload: bytes):
 
 
 def test_webrepl_exec_success():
-    """webrepl_exec returns {"output": "..."} on successful command execution.
+    """webrepl_exec returns {"output": "1"} on successful command execution.
 
-    Frame sequence after HTTP handshake:
-      1. Text frame: "Password: "  (login prompt, read byte-by-byte)
-      2. Text frame: "WebREPL connected\\r\\n\\r\\n"  (post-login banner, drained)
-      3. Text frame: "raw REPL; CTRL-B to exit\\r\\n>"  (raw REPL entry prompt)
-      4. Text frame: "OK1\\x04>"  (command output + end marker)
+    Frame sequence (each a complete WebSocket frame):
+      1. Text frame: "Password: "   — login prompt
+      2. Text frame: "raw REPL; CTRL-B to exit\\r\\n>"  — raw REPL entry
+      3. Text frame: "OK1\\n\\x04\\x04>"  — command output + end markers
     """
     ws_payload = (
         _frame(b"Password: ")
-        + _frame(b"WebREPL connected\r\n\r\n")
         + _frame(b"raw REPL; CTRL-B to exit\r\n>")
-        + _frame(b"OK1\x04>")
+        + _frame(b"OK1\n\x04\x04>")
     )
     mock_sock = _make_mock_sock(ws_payload)
 
@@ -68,6 +66,35 @@ def test_webrepl_exec_success():
 
     assert "error" not in result
     assert result.get("output") == "1"
+
+
+def test_webrepl_exec_multiframe_output():
+    """webrepl_exec correctly assembles output split across multiple WebSocket frames.
+
+    Simulates long output where MicroPython splits the response:
+      - Frame for "OK" prefix
+      - Frame for JSON payload + first \\x04
+      - Frame for second \\x04
+      - Frame for final ">" prompt
+    All four payloads must be assembled before \\x04> is detected.
+    """
+    json_output = b'{"firmware": "1.21.0", "wifi_connected": true}'
+    ws_payload = (
+        _frame(b"Password: ")
+        + _frame(b"raw REPL; CTRL-B to exit\r\n>")
+        + _frame(b"OK")                       # frame 1: OK prefix
+        + _frame(json_output + b"\x04")        # frame 2: output + first \x04
+        + _frame(b"\x04")                      # frame 3: second \x04 (no errors)
+        + _frame(b">")                         # frame 4: raw REPL prompt
+    )
+    mock_sock = _make_mock_sock(ws_payload)
+
+    with patch("socket.socket", return_value=mock_sock), \
+         patch("socket.getaddrinfo", return_value=[(None, None, None, None, (HOST, WEBREPL_PORT))]):
+        result = webrepl_exec(HOST, PASSWORD, "import json; print(json.dumps({}))", timeout=5)
+
+    assert "error" not in result
+    assert "firmware" in result.get("output", "")
 
 
 def test_webrepl_exec_timeout_on_connect():

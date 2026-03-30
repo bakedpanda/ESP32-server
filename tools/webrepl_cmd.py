@@ -1,8 +1,9 @@
 """WebREPL command execution helper for ESP32 boards over WiFi.
 
 Executes MicroPython commands on boards via the WebREPL websocket protocol.
-Uses the same websocket framing as tools/vendor/webrepl_cli.py to ensure
-compatibility with MicroPython's WebREPL server.
+Reads complete WebSocket frames (stripping headers) before scanning for
+markers, so multi-frame responses are handled correctly regardless of how
+MicroPython splits output across frames.
 
 Requirements covered: STAT-01 (WiFi path), STAT-02 (WiFi path).
 """
@@ -15,67 +16,83 @@ _FRAME_TXT = 0x81
 _FRAME_BIN = 0x82
 
 
-# ── WebSocket class (matches MicroPython's WebREPL server expectations) ──
-# Adapted from tools/vendor/webrepl_cli.py to ensure frame compatibility.
+# ── WebSocket frame I/O ──────────────────────────────────────────────────
 
-class _WebSocket:
-    def __init__(self, s):
-        self.s = s
-        self.buf = b""
+def _ws_write_frame(sock, data: bytes, frame_type: int = _FRAME_BIN):
+    """Send data as a single WebSocket frame."""
+    l = len(data)
+    if l < 126:
+        hdr = struct.pack(">BB", frame_type, l)
+    else:
+        hdr = struct.pack(">BBH", frame_type, 126, l)
+    sock.send(hdr)
+    sock.send(data)
 
-    def write(self, data, frame=_FRAME_BIN):
-        l = len(data)
-        if l < 126:
-            hdr = struct.pack(">BB", frame, l)
-        else:
-            hdr = struct.pack(">BBH", frame, 126, l)
-        self.s.send(hdr)
-        self.s.send(data)
 
-    def _recvexactly(self, sz):
-        res = b""
-        while sz:
-            data = self.s.recv(sz)
-            if not data:
+def _ws_read_frame(sock) -> bytes:
+    """Read one complete WebSocket frame and return its payload bytes only.
+
+    Skips frames with unexpected opcodes (e.g. ping/pong). Returns b"" if
+    the socket is closed or no data arrives.
+    """
+    while True:
+        # Read 2-byte frame header
+        header = b""
+        while len(header) < 2:
+            chunk = sock.recv(2 - len(header))
+            if not chunk:
+                return b""
+            header += chunk
+
+        fl, sz = struct.unpack(">BB", header)
+
+        # Extended 16-bit payload length
+        if sz == 126:
+            ext = b""
+            while len(ext) < 2:
+                chunk = sock.recv(2 - len(ext))
+                if not chunk:
+                    return b""
+                ext += chunk
+            (sz,) = struct.unpack(">H", ext)
+
+        # Read payload
+        payload = b""
+        while len(payload) < sz:
+            chunk = sock.recv(sz - len(payload))
+            if not chunk:
                 break
-            res += data
-            sz -= len(data)
-        return res
+            payload += chunk
 
-    def read(self, size, text_ok=False):
-        if not self.buf:
-            while True:
-                hdr = self._recvexactly(2)
-                assert len(hdr) == 2
-                fl, sz = struct.unpack(">BB", hdr)
-                if sz == 126:
-                    hdr = self._recvexactly(2)
-                    assert len(hdr) == 2
-                    (sz,) = struct.unpack(">H", hdr)
-                if fl == _FRAME_BIN:
-                    break
-                if text_ok and fl == _FRAME_TXT:
-                    break
-                # skip unexpected frame type
-                while sz:
-                    skip = self.s.recv(sz)
-                    sz -= len(skip)
-            data = self._recvexactly(sz)
-            self.buf = data
-
-        d = self.buf[:size]
-        self.buf = self.buf[size:]
-        return d
-
-    def ioctl(self, req, val):
-        assert req == 9 and val == 2
+        # Accept text (0x81) and binary (0x82) frames; skip anything else
+        if fl in (_FRAME_TXT, _FRAME_BIN):
+            return payload
+        # Unknown frame type — discard and read the next one
 
 
-# ── Internal helpers ─────────────────────────────────────────────────────
+def _read_until(sock, marker: bytes, max_bytes: int = 8192) -> bytes:
+    """Accumulate decoded WebSocket frame payloads until marker is found.
+
+    Reads complete frames so that markers split across frame boundaries
+    are still detected correctly.
+    """
+    buf = b""
+    while marker not in buf and len(buf) < max_bytes:
+        frame = _ws_read_frame(sock)
+        if not frame:
+            break
+        buf += frame
+    return buf
+
+
+# ── Handshake & login ────────────────────────────────────────────────────
 
 def _client_handshake(sock):
     """HTTP WebSocket upgrade (MicroPython WebREPL variant).
-    Uses makefile line-by-line reading to reliably consume HTTP headers."""
+
+    Uses makefile for line-by-line header reading — matches the approach
+    in tools/vendor/webrepl_cli.py which is known to work in production.
+    """
     cl = sock.makefile("rwb", 0)
     cl.write(
         b"GET / HTTP/1.1\r\n"
@@ -92,35 +109,26 @@ def _client_handshake(sock):
             break
 
 
-def _login(ws, password):
-    """Wait for Password: prompt (byte-by-byte via ws.read) and send password."""
-    while True:
-        c = ws.read(1, text_ok=True)
-        if c == b":":
-            ws.read(1, text_ok=True)  # consume the space after ":"
-            break
-    ws.write(password.encode("utf-8") + b"\r")
+def _login(sock, password: str):
+    """Read frames until 'Password: ' prompt appears, then send password."""
+    _read_until(sock, b"Password: ")
+    _ws_write_frame(sock, password.encode("utf-8") + b"\r", _FRAME_TXT)
 
 
-def _read_until(ws, marker, max_bytes=8192):
-    """Read bytes from websocket (proper frame decoding) until marker found."""
-    buf = b""
-    while marker not in buf and len(buf) < max_bytes:
-        buf += ws.read(1, text_ok=True)
-    return buf
+# ── Raw REPL execution ───────────────────────────────────────────────────
 
-
-def _exec_raw_repl(ws, command):
+def _exec_raw_repl(sock, command: str) -> str:
     """Enter raw REPL, execute command, return output string."""
-    # Enter raw REPL mode (Ctrl-A) — use text frame
-    ws.write(b"\x01", _FRAME_TXT)
-    _read_until(ws, b">")
+    # Enter raw REPL (Ctrl-A)
+    _ws_write_frame(sock, b"\x01", _FRAME_TXT)
+    # Consume any post-login banner then wait for raw REPL prompt ">"
+    _read_until(sock, b">")
 
-    # Send command + Ctrl-D to execute — use text frame
-    ws.write(command.encode("utf-8") + b"\x04", _FRAME_TXT)
+    # Send command + Ctrl-D
+    _ws_write_frame(sock, command.encode("utf-8") + b"\x04", _FRAME_TXT)
 
-    # Response format: OK<output>\x04<error>\x04>
-    raw = _read_until(ws, b"\x04>")
+    # Response format: OK<output>\x04<errors>\x04>
+    raw = _read_until(sock, b"\x04>")
     text = raw.decode("utf-8", errors="replace")
 
     ok_idx = text.find("OK")
@@ -180,10 +188,8 @@ def webrepl_exec(host: str, password: str, command: str,
 
     try:
         _client_handshake(s)
-        ws = _WebSocket(s)
-        _login(ws, password)
-        ws.ioctl(9, 2)
-        output = _exec_raw_repl(ws, command)
+        _login(s, password)
+        output = _exec_raw_repl(s, command)
         return {"output": output}
     except socket.timeout:
         return {
