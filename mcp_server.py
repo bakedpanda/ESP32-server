@@ -100,6 +100,12 @@ def flash_micropython(port: str, chip: str | None = None) -> dict:
        "[board description] flashing mode". Try the alternative process with the user.
        Once you find what works, call save_board_flash_notes to record it for next time.
 
+    BOARD-SPECIFIC BOOTLOADER NOTES:
+    - Seeed XIAO ESP32-S3: has no accessible RESET button. To enter bootloader mode,
+      hold the BOOT button first, then plug in the USB cable while still holding it.
+      Release BOOT once the cable is connected. Do NOT tell the user to press RESET —
+      instruct them to unplug, hold BOOT, then replug.
+
     POST-FLASH: After a successful flash, always:
     1. Ask the user: "What would you like to call this board?" (e.g. "desk", "kitchen", "sensor1")
     2. Build the hostname as: {name}-esp32-{id} where {id} is the first 6 characters of
