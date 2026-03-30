@@ -26,13 +26,13 @@ All capabilities are exposed as MCP tools — Claude calls them directly, no cop
 Run the setup script on your Pi. It handles everything: clones the repo, creates a virtualenv, installs dependencies, adds you to the `dialout` group, prompts for WiFi credentials, and installs+starts the systemd service.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/bakedpanda/ESP32-server/main/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/bakedpanda/esp32-station/main/setup.sh | bash
 ```
 
 Or clone first and run locally:
 
 ```bash
-git clone https://github.com/bakedpanda/ESP32-server.git esp32-station
+git clone https://github.com/bakedpanda/esp32-station.git esp32-station
 bash esp32-station/setup.sh
 ```
 
@@ -45,7 +45,7 @@ If you prefer to do it step by step:
 **1. Clone and install dependencies**
 
 ```bash
-git clone https://github.com/bakedpanda/ESP32-server.git esp32-station
+git clone https://github.com/bakedpanda/esp32-station.git esp32-station
 cd esp32-station
 python3 -m venv venv
 source venv/bin/activate

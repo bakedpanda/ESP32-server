@@ -6,9 +6,9 @@ set -euo pipefail
 # Safe to re-run: each step checks before acting.
 #
 # Usage: bash setup.sh
-#        curl -fsSL https://raw.githubusercontent.com/bakedpanda/ESP32-server/main/setup.sh | bash
+#        curl -fsSL https://raw.githubusercontent.com/bakedpanda/esp32-station/main/setup.sh | bash
 
-REPO_URL="https://github.com/bakedpanda/ESP32-server.git"
+REPO_URL="https://github.com/bakedpanda/esp32-station.git"
 INSTALL_DIR="$HOME/esp32-station"
 SERVICE_NAME="esp32-station"
 CREDS_PATH="/etc/esp32-station/wifi.json"
