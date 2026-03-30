@@ -7,6 +7,8 @@ Endpoint: http://raspberrypi.local:8000/mcp
 Registration on main machine:
     claude mcp add --transport http esp32-station http://raspberrypi.local:8000/mcp
 """
+import pathlib
+
 from mcp.server.fastmcp import FastMCP
 
 from tools.board_detection import detect_chip, list_boards, load_board_state, save_board_state
@@ -28,8 +30,8 @@ IMPORTANT — understand this topology before using any tool:
 - ESP32 boards connect via USB to the PI — not to the user's machine.
 - The user runs Claude Code on their MAIN MACHINE and talks to this server over the LAN.
 - "local_path" in any tool always means a path on the Pi's filesystem.
-- To write a file and deploy it: write the file to the Pi first (e.g. /tmp/main.py),
-  then call deploy_file_to_board or deploy_ota_wifi with that Pi-side path.
+- To write a file and deploy it: use write_temp_file to write it to the Pi first,
+  then pass the returned path to deploy_file_to_board or deploy_ota_wifi.
 - Never assume a file exists on the Pi just because the user mentions it — create it first.
 - WiFi credentials are stored on the Pi at /etc/esp32-station/wifi.json and are never
   passed as tool parameters.
@@ -397,6 +399,34 @@ def deploy_boot_config(port: str, hostname: str | None = None) -> dict:
             return _deploy_boot_config(port, hostname=hostname)
     except TimeoutError as e:
         return {"error": "serial_lock_timeout", "detail": str(e)}
+
+
+STAGING_DIR = pathlib.Path.home() / ".esp32-station" / "staging"
+
+
+@mcp.tool()
+def write_temp_file(filename: str, content: str) -> dict:
+    """Write content to a temporary file on the Pi for deployment to a board.
+
+    Use this whenever you need to write code or config that will be deployed
+    via deploy_file_to_board or deploy_ota_wifi. The file is written to a
+    staging directory on the Pi and the Pi-side path is returned.
+
+    Args:
+        filename: Filename only, e.g. "main.py" or "config.json"
+        content:  Full file content as a string
+
+    Returns:
+        {"path": "/home/esp32/.esp32-station/staging/main.py"} on success.
+        {"error": "write_failed", "detail": ...} on failure.
+    """
+    try:
+        STAGING_DIR.mkdir(parents=True, exist_ok=True)
+        dest = STAGING_DIR / pathlib.Path(filename).name
+        dest.write_text(content)
+        return {"path": str(dest)}
+    except Exception as e:
+        return {"error": "write_failed", "detail": str(e)}
 
 
 if __name__ == "__main__":
