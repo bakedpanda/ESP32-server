@@ -23,7 +23,7 @@ except ImportError:
     import uos as os
 wifi_connected = False
 ip_address = ""
-board = sys.platform
+hostname = sys.platform
 try:
     import network
     wlan = network.WLAN(network.STA_IF)
@@ -31,7 +31,7 @@ try:
     if wifi_connected:
         ip_address = wlan.ifconfig()[0]
     try:
-        board = wlan.config('dhcp_hostname')
+        hostname = wlan.config('dhcp_hostname')
     except Exception:
         pass
 except Exception:
@@ -41,7 +41,7 @@ free_memory = gc.mem_free()
 stat = os.statvfs('/')
 free_storage = stat[0] * stat[3]
 firmware = '.'.join(str(x) for x in sys.version_info[:3])
-print(json.dumps({"firmware": firmware, "wifi_connected": wifi_connected, "ip_address": ip_address, "free_memory": free_memory, "free_storage": free_storage, "board": board}))
+print(json.dumps({"firmware": firmware, "wifi_connected": wifi_connected, "ip_address": ip_address, "free_memory": free_memory, "free_storage": free_storage, "hostname": hostname}))
 """
 
 HEALTH_PING = "print(1)"
@@ -99,6 +99,7 @@ def get_status(port=None, host=None, password=None) -> dict:
     try:
         data = json.loads(result["output"])
         data["transport"] = transport
+        data["health"] = "healthy"
         return data
     except (json.JSONDecodeError, KeyError):
         return {

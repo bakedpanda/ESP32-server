@@ -14,7 +14,7 @@ STATUS_JSON = json.dumps({
     "ip_address": "192.168.1.42",
     "free_memory": 102400,
     "free_storage": 2097152,
-    "board": "esp32",
+    "hostname": "s3-esp32-983dae",
 })
 
 
@@ -32,8 +32,9 @@ def test_get_status_usb_success():
     assert result["ip_address"] == "192.168.1.42"
     assert result["free_memory"] == 102400
     assert result["free_storage"] == 2097152
-    assert result["board"] == "esp32"
+    assert result["hostname"] == "s3-esp32-983dae"
     assert result["transport"] == "usb"
+    assert result["health"] == "healthy"
     assert "error" not in result
 
 
