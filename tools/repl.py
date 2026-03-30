@@ -45,31 +45,45 @@ def exec_repl(port: str, command: str, timeout: int = REPL_TIMEOUT_SECONDS) -> d
 # ── Serial read ────────────────────────────────────────────────────────────
 
 def read_serial(port: str, timeout: int = READ_SERIAL_TIMEOUT) -> dict:
-    """Capture recent serial output from the board via mpremote.
+    """Capture recent serial output from the board using direct pyserial reads.
 
-    Uses mpremote exec with an empty command to capture any buffered output
-    without sending a real command to the board.
+    Opens the port without entering raw REPL mode, so the board keeps running
+    and any output it has produced (buffered in the OS) is returned immediately.
+    If nothing is buffered, waits up to `timeout` seconds for the first byte,
+    then drains whatever arrives.
 
-    On success: returns {"port": port, "output": <stdout>} (newlines preserved).
-    On timeout: returns {"error": "read_timeout", "detail": "serial read timed out after Ns"}.
-    On failure: returns {"error": "read_failed", "detail": <stderr>}.
+    On success: returns {"port": port, "output": <decoded string>}.
+    On failure: returns {"error": "read_failed", "detail": <message>}.
 
     Never raises to callers.
     """
     try:
-        result = subprocess.run(
-            [MPREMOTE_CMD, "connect", port, "exec", ""],
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-        )
-    except subprocess.TimeoutExpired:
-        return {"error": "read_timeout", "detail": f"serial read timed out after {timeout}s"}
+        ser = serial.Serial(port, baudrate=115200, timeout=timeout,
+                            dsrdtr=False, rtscts=False)
+        ser.dtr = False
+        ser.rts = False
+        time.sleep(0.05)  # let any in-flight bytes settle into the OS buffer
 
-    if result.returncode != 0:
-        return {"error": "read_failed", "detail": result.stderr.strip()}
+        waiting = ser.in_waiting
+        if waiting:
+            data = ser.read(waiting)
+            # Drain any bytes that arrive in the next 100 ms
+            time.sleep(0.1)
+            tail = ser.in_waiting
+            if tail:
+                data += ser.read(tail)
+        else:
+            # Nothing buffered yet — wait up to timeout for first byte
+            data = ser.read(1)
+            if data and ser.in_waiting:
+                data += ser.read(ser.in_waiting)
 
-    return {"port": port, "output": result.stdout}
+        ser.close()
+        return {"port": port, "output": data.decode("utf-8", errors="replace")}
+    except serial.SerialException as exc:
+        return {"error": "read_failed", "detail": str(exc)}
+    except Exception as exc:
+        return {"error": "read_failed", "detail": str(exc)}
 
 
 # ── Board reset ────────────────────────────────────────────────────────────
