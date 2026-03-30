@@ -9,7 +9,7 @@ Registration on main machine:
 """
 from mcp.server.fastmcp import FastMCP
 
-from tools.board_detection import detect_chip, list_boards, load_board_state
+from tools.board_detection import detect_chip, list_boards, load_board_state, save_board_state
 from tools.file_deploy import deploy_file, deploy_directory
 from tools.firmware_flash import flash_firmware
 from tools.repl import exec_repl, read_serial, soft_reset, hard_reset
@@ -51,24 +51,26 @@ def identify_chip(port: str) -> dict:
 def flash_micropython(port: str, chip: str | None = None) -> dict:
     """Flash MicroPython firmware onto the board at the given serial port.
 
-    IMPORTANT: Always performs a full erase before writing firmware. This ensures
-    no partial flash states from previous firmware. The board will be completely
-    blank after erase and before the new firmware is written.
+    IMPORTANT: Always performs a full erase before writing firmware.
 
-    The user must hold the BOOT button on the ESP32 before and during the erase/flash
-    process. Release the BOOT button only when the "Erasing" message appears in the output.
-    If dots keep appearing after "Connecting..." the board is not in flashing mode —
-    release and re-hold BOOT and try again. The BOOT button is usually labelled "BOOT"
-    or "FLASH" and is one of two buttons on the board.
+    BOOT BUTTON GUIDANCE — follow this sequence with the user:
+    1. Before calling this tool: tell the user to hold the BOOT button (labelled
+       "BOOT" or "FLASH") and keep holding it. Do not call the tool until they confirm
+       they are holding it.
+    2. Call the tool.
+    3. On success: tell the user they can release the BOOT button.
+    4. On erase_failed error: tell the user to release the BOOT button, then re-hold it,
+       then retry. Check saved_flash_notes in the result for any board-specific process
+       that was recorded previously.
+    5. On repeated failure: search the web for "[chip] ESP32 enter bootloader mode" or
+       "[board description] flashing mode". Try the alternative process with the user.
+       Once you find what works, call save_board_flash_notes to record it for next time.
 
-    Automatically selects the correct firmware for the chip variant.
     Firmware is cached locally (7-day TTL); network not required if cache is fresh.
-
-    Pre-flight: runs chip detection if chip is not provided.
-    Fails fast with a structured error if chip cannot be identified.
+    Pre-flight chip detection runs automatically if chip is not provided.
 
     Returns {"port": port, "chip": chip, "firmware": path} on success.
-    Returns {"error": error_code, "detail": ...} on failure.
+    Returns {"error": error_code, "chip": chip, "detail": ..., "saved_flash_notes": ...} on failure.
 
     Args:
         port: Serial port path, e.g. "/dev/ttyUSB0"
@@ -76,17 +78,36 @@ def flash_micropython(port: str, chip: str | None = None) -> dict:
     """
     result = flash_firmware(port, chip=chip)
     if result.get("error") == "erase_failed":
+        # Include any previously saved board-specific notes so Claude can try them
+        state = load_board_state()
+        chip_key = result.get("chip", "")
+        result["saved_flash_notes"] = state.get(f"flash_notes:{chip_key}", None)
         result["user_action"] = (
-            "Hold the BOOT button on the ESP32 board and keep holding it. "
-            "Release it only when you see 'Erasing' in the output. "
-            "If dots keep appearing after 'Connecting...' the board is not in "
-            "flashing mode — release, re-hold BOOT, and retry."
-        )
-        result["reason"] = (
-            "ESP32 must be in bootloader mode for flashing. "
-            "The BOOT button (sometimes labelled FLASH) forces the chip into download mode."
+            "Tell the user to release the BOOT button, then re-hold it and retry. "
+            "If this fails again, search for the correct bootloader process for this "
+            "chip/board and try the alternative. Call save_board_flash_notes once you "
+            "find what works."
         )
     return result
+
+
+@mcp.tool()
+def save_board_flash_notes(chip: str, notes: str) -> dict:
+    """Save board-specific flash/bootloader notes for a chip variant.
+
+    Call this after confirming a flashing process works for a particular board,
+    especially when the standard BOOT-button process did not work first time.
+    Notes are stored by chip type and returned in future flash failures so Claude
+    can try the known-good process immediately.
+
+    Args:
+        chip: Chip variant, e.g. "ESP32", "ESP32-S3". Use the value from list_connected_boards.
+        notes: Plain-text description of the working bootloader process for this board.
+    """
+    state = load_board_state()
+    state[f"flash_notes:{chip}"] = notes
+    save_board_state(state)
+    return {"saved": True, "chip": chip}
 
 
 @mcp.tool()

@@ -121,7 +121,7 @@ def flash_firmware(port: str, chip: str | None = None) -> dict:
         timeout=60,
     )
     if erase.returncode != 0:
-        return {"error": "erase_failed", "detail": erase.stderr.strip()}
+        return {"error": "erase_failed", "chip": chip, "port": port, "detail": erase.stderr.strip()}
 
     # Step 5: Write firmware
     write_offset = WRITE_OFFSETS.get(chip, DEFAULT_WRITE_OFFSET)
