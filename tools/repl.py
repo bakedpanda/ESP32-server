@@ -45,12 +45,12 @@ def exec_repl(port: str, command: str, timeout: int = REPL_TIMEOUT_SECONDS) -> d
 # ── Serial read ────────────────────────────────────────────────────────────
 
 def read_serial(port: str, timeout: int = READ_SERIAL_TIMEOUT) -> dict:
-    """Capture recent serial output from the board using direct pyserial reads.
+    """Capture serial output from the board using direct pyserial reads.
 
-    Opens the port without entering raw REPL mode, so the board keeps running
-    and any output it has produced (buffered in the OS) is returned immediately.
-    If nothing is buffered, waits up to `timeout` seconds for the first byte,
-    then drains whatever arrives.
+    Opens the port without entering raw REPL mode so the board keeps running.
+    On USB CDC (ttyACM) devices the board only sends data while the port is
+    open, so this function holds the connection open and collects output until
+    either `timeout` seconds elapse or 500 ms of silence follows the last byte.
 
     On success: returns {"port": port, "output": <decoded string>}.
     On failure: returns {"error": "read_failed", "detail": <message>}.
@@ -58,28 +58,28 @@ def read_serial(port: str, timeout: int = READ_SERIAL_TIMEOUT) -> dict:
     Never raises to callers.
     """
     try:
-        ser = serial.Serial(port, baudrate=115200, timeout=timeout,
+        ser = serial.Serial(port, baudrate=115200, timeout=0.1,
                             dsrdtr=False, rtscts=False)
         ser.dtr = False
         ser.rts = False
-        time.sleep(0.05)  # let any in-flight bytes settle into the OS buffer
 
-        waiting = ser.in_waiting
-        if waiting:
-            data = ser.read(waiting)
-            # Drain any bytes that arrive in the next 100 ms
-            time.sleep(0.1)
-            tail = ser.in_waiting
-            if tail:
-                data += ser.read(tail)
-        else:
-            # Nothing buffered yet — wait up to timeout for first byte
-            data = ser.read(1)
-            if data and ser.in_waiting:
-                data += ser.read(ser.in_waiting)
+        deadline = time.monotonic() + timeout
+        buf = bytearray()
+        last_rx = time.monotonic()
+
+        while time.monotonic() < deadline:
+            n = ser.in_waiting
+            if n:
+                buf.extend(ser.read(n))
+                last_rx = time.monotonic()
+            elif buf and (time.monotonic() - last_rx) > 0.5:
+                # Received data then 500 ms of silence — done
+                break
+            else:
+                time.sleep(0.05)
 
         ser.close()
-        return {"port": port, "output": data.decode("utf-8", errors="replace")}
+        return {"port": port, "output": buf.decode("utf-8", errors="replace")}
     except serial.SerialException as exc:
         return {"error": "read_failed", "detail": str(exc)}
     except Exception as exc:
