@@ -334,10 +334,11 @@ def pull_and_deploy_github(
 
 
 @mcp.tool()
-def get_board_status(port: str | None = None, host: str | None = None, password: str | None = None) -> dict:
+def get_board_status(port: str | None = None, host: str | None = None) -> dict:
     """Get firmware version, WiFi status, IP, free memory/storage from an ESP32 board.
 
-    Provide port for USB or host+password for WiFi. Exactly one transport required.
+    Provide port for USB or host for WiFi. WebREPL password is read from
+    /etc/esp32-station/wifi.json automatically — never pass it as a parameter.
     """
     if port is not None:
         try:
@@ -345,15 +346,16 @@ def get_board_status(port: str | None = None, host: str | None = None, password:
                 return _get_status(port=port)
         except TimeoutError as e:
             return {"error": "serial_lock_timeout", "detail": str(e)}
-    return _get_status(host=host, password=password)
+    return _get_status(host=host)
 
 
 @mcp.tool()
-def check_board_health(port: str | None = None, host: str | None = None, password: str | None = None) -> dict:
+def check_board_health(port: str | None = None, host: str | None = None) -> dict:
     """Check if a board is alive and running MicroPython.
 
     Returns status: 'healthy', 'unresponsive', or 'not_found'.
-    Provide port for USB or host+password for WiFi.
+    Provide port for USB or host for WiFi. WebREPL password is read from
+    /etc/esp32-station/wifi.json automatically — never pass it as a parameter.
     """
     if port is not None:
         try:
@@ -361,7 +363,7 @@ def check_board_health(port: str | None = None, host: str | None = None, passwor
                 return _check_health(port=port)
         except TimeoutError as e:
             return {"error": "serial_lock_timeout", "detail": str(e)}
-    return _check_health(host=host, password=password)
+    return _check_health(host=host)
 
 
 @mcp.tool()

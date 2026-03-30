@@ -8,6 +8,7 @@ Provides:
 """
 import json
 
+from tools.credentials import load_credentials
 from tools.repl import exec_repl
 from tools.webrepl_cmd import webrepl_exec
 from serial.tools.list_ports import comports
@@ -85,7 +86,10 @@ def get_status(port=None, host=None, password=None) -> dict:
         transport = "usb"
     else:
         if not password:
-            return {"error": "invalid_params", "detail": "password required for WiFi status"}
+            creds = load_credentials()
+            if "error" in creds:
+                return creds
+            password = creds["webrepl_password"]
         result = webrepl_exec(host, password, STATUS_SCRIPT, timeout=15)
         transport = "wifi"
 
@@ -130,7 +134,10 @@ def check_health(port=None, host=None, password=None) -> dict:
         result = exec_repl(port, HEALTH_PING, timeout=HEALTH_TIMEOUT)
     else:
         if not password:
-            return {"error": "invalid_params", "detail": "password required for WiFi health check"}
+            creds = load_credentials()
+            if "error" in creds:
+                return creds
+            password = creds["webrepl_password"]
         result = webrepl_exec(host, password, HEALTH_PING, timeout=HEALTH_TIMEOUT)
 
     if "error" in result:
