@@ -87,7 +87,7 @@ Plans:
 Plans:
 - [x] 07-01-PLAN.md -- Test scaffolds: test_setup_script.py (SETUP-01 content tests) and test_readme.py (SETUP-03 content tests)
 - [x] 07-02-PLAN.md -- Write setup.sh: idempotent Pi onboarding script (SETUP-01)
-- [ ] 07-03-PLAN.md -- Update README.md: 15 tools table, 12 architecture modules, setup.sh reference, MCP registration (SETUP-03)
+- [x] 07-03-PLAN.md -- Update README.md: 15 tools table, 12 architecture modules, setup.sh reference, MCP registration (SETUP-03)
 
 ## Progress
 
