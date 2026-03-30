@@ -1,58 +1,61 @@
-"""mDNS discovery of MicroPython boards advertising WebREPL.
+"""Discovery of MicroPython boards via hostname.local resolution.
 
 Requirements covered: STAT-03.
+
+MicroPython's WebREPL does not advertise a _webrepl._tcp mDNS service record,
+so service browsing doesn't work. Instead we resolve known hostnames saved to
+boards.json by deploy_boot_config using the system resolver (avahi/nss-mdns on
+Raspberry Pi OS resolves .local hostnames automatically).
 """
-import time
+import socket
 
-from zeroconf import ServiceBrowser, ServiceListener, Zeroconf
+from tools.board_detection import load_board_state
 
-WEBREPL_SERVICE = "_webrepl._tcp.local."
-DEFAULT_TIMEOUT = 3
-
-
-class _BoardListener(ServiceListener):
-    """Listener that collects boards discovered via mDNS."""
-
-    def __init__(self):
-        self.boards: list[dict] = []
-        self._zc: Zeroconf | None = None
-
-    def add_service(self, zc: Zeroconf, type_: str, name: str) -> None:
-        info = zc.get_service_info(type_, name)
-        if info and info.parsed_addresses():
-            self.boards.append({
-                "hostname": info.server.rstrip("."),
-                "ip": info.parsed_addresses()[0],
-                "port": info.port or 8266,
-            })
-
-    def remove_service(self, zc: Zeroconf, type_: str, name: str) -> None:
-        pass
-
-    def update_service(self, zc: Zeroconf, type_: str, name: str) -> None:
-        pass
+WEBREPL_PORT = 8266
+RESOLVE_TIMEOUT = 3.0
 
 
-def discover_boards(timeout: int = DEFAULT_TIMEOUT) -> list[dict] | dict:
-    """Discover MicroPython boards advertising WebREPL via mDNS.
+def discover_boards(timeout: int = RESOLVE_TIMEOUT) -> list[dict] | dict:
+    """Discover MicroPython boards by resolving known hostnames on the LAN.
 
-    Browses for _webrepl._tcp services on the local network for ``timeout``
-    seconds and returns a list of discovered boards.
+    Reads hostnames saved by deploy_boot_config from boards.json and attempts
+    to resolve each as hostname.local. Returns boards that resolve successfully.
 
     Args:
-        timeout: Seconds to browse before returning. Default 3.
+        timeout: Seconds to wait per hostname resolution attempt. Default 3.
 
     Returns:
         list[dict]: Each dict has keys ``hostname``, ``ip``, ``port``.
                     Empty list if no boards found.
-        dict: Error dict ``{"error": "mdns_failed", "detail": ...}`` on failure.
+        dict: Error dict ``{"error": "discovery_failed", "detail": ...}`` on failure.
     """
     try:
-        zc = Zeroconf()
-        listener = _BoardListener()
-        ServiceBrowser(zc, WEBREPL_SERVICE, listener)
-        time.sleep(timeout)
-        zc.close()
-        return listener.boards
+        state = load_board_state()
+        hostnames = [
+            v["hostname"]
+            for v in state.values()
+            if isinstance(v, dict) and v.get("hostname")
+        ]
+
+        if not hostnames:
+            return []
+
+        found = []
+        prev_timeout = socket.getdefaulttimeout()
+        socket.setdefaulttimeout(timeout)
+        try:
+            for hostname in hostnames:
+                try:
+                    results = socket.getaddrinfo(
+                        hostname + ".local", WEBREPL_PORT, socket.AF_INET
+                    )
+                    ip = results[0][4][0]
+                    found.append({"hostname": hostname + ".local", "ip": ip, "port": WEBREPL_PORT})
+                except OSError:
+                    pass
+        finally:
+            socket.setdefaulttimeout(prev_timeout)
+
+        return found
     except Exception as e:
-        return {"error": "mdns_failed", "detail": str(e)}
+        return {"error": "discovery_failed", "detail": str(e)}

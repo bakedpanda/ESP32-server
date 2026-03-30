@@ -6,6 +6,7 @@ import os
 import pathlib
 import tempfile
 
+from tools.board_detection import load_board_state, save_board_state
 from tools.credentials import load_credentials
 from tools.file_deploy import deploy_file
 
@@ -69,5 +70,11 @@ def deploy_boot_config(port: str, hostname: str | None = None) -> dict:
         result = deploy_file(port, tmp_path, "boot.py")
     finally:
         os.unlink(tmp_path)
+
+    # Save hostname to boards.json so discover_boards can resolve it later
+    if "error" not in result:
+        state = load_board_state()
+        state.setdefault(port, {})["hostname"] = hostname
+        save_board_state(state)
 
     return result

@@ -335,9 +335,11 @@ def check_board_health(port: str | None = None, host: str | None = None, passwor
 
 @mcp.tool()
 def discover_boards(timeout: int = 3) -> list[dict] | dict:
-    """Discover MicroPython boards on the LAN via mDNS (looks for _webrepl._tcp).
+    """Discover MicroPython boards on the LAN by resolving known hostnames.
 
-    Returns list of {hostname, ip, port} for each board found. Empty list if none found.
+    Resolves hostnames saved by deploy_boot_config as hostname.local using the
+    system resolver. Returns list of {hostname, ip, port} for each board found.
+    Empty list if no boards have been provisioned or none are reachable.
     """
     return _discover_boards(timeout=timeout)
 
