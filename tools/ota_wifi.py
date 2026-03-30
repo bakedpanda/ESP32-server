@@ -16,6 +16,8 @@ Security notes (D-03):
 import pathlib
 import subprocess
 
+from tools.credentials import load_credentials
+
 # ── Constants ──────────────────────────────────────────────────────────────
 WEBREPL_CLI = pathlib.Path(__file__).parent / "vendor" / "webrepl_cli.py"
 OTA_SIZE_LIMIT = 200 * 1024         # 200KB hard limit (D-02)
@@ -24,15 +26,15 @@ WIFI_TIMEOUT_SECONDS = 30           # Claude's discretion: fast fail on unreacha
 
 # ── deploy_ota_wifi ────────────────────────────────────────────────────────
 
-def deploy_ota_wifi(host: str, local_path: str, remote_path: str, password: str) -> dict:
+def deploy_ota_wifi(host: str, local_path: str, remote_path: str) -> dict:
     """Transfer a file to an ESP32 board over WiFi using WebREPL.
+
+    Reads the WebREPL password from /etc/esp32-station/wifi.json automatically.
 
     Args:
         host:        Board's WiFi IP or hostname (e.g. "192.168.1.42" or "esp32.local").
-                     Provided per-call; not stored anywhere (D-05).
         local_path:  Absolute path to the local file to upload.
         remote_path: Destination path on the board (e.g. "/main.py").
-        password:    WebREPL password. Never stored; passed through to subprocess only (D-03).
 
     Returns error dicts on failure (never raises). On success (D-04):
         {"port": host, "files_written": [remote_path], "transport": "wifi"}
@@ -44,6 +46,12 @@ def deploy_ota_wifi(host: str, local_path: str, remote_path: str, password: str)
          "fallback": "use deploy_file_to_board"}           — timeout or connection failure (D-07)
         {"error": "ota_failed", "detail": ...}            — other transfer failure
     """
+    # Load WebREPL password from Pi-local credentials file
+    creds = load_credentials()
+    if "error" in creds:
+        return creds
+    password = creds["webrepl_password"]
+
     # Pre-check: webrepl_cli.py must be vendored (Pitfall 4)
     if not WEBREPL_CLI.exists():
         return {

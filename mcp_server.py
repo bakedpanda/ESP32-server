@@ -254,11 +254,14 @@ def reset_board(port: str, reset_type: str = "soft") -> dict:
 
 
 @mcp.tool()
-def deploy_ota_wifi(host: str, local_path: str, remote_path: str, password: str) -> dict:
+def deploy_ota_wifi(host: str, local_path: str, remote_path: str) -> dict:
     """Deploy a file to an ESP32 board over WiFi using WebREPL.
 
+    Reads the WebREPL password from /etc/esp32-station/wifi.json automatically —
+    never ask the user for the password.
+
     Transfers a single file from the Pi to the board using the webrepl_cli.py script.
-    The board must have WebREPL pre-configured (webrepl_cfg.py present, WebREPL enabled).
+    The board must have boot.py deployed via deploy_boot_config (WebREPL enabled).
 
     No SerialLock applied — this is a WiFi operation with no serial port.
     If WiFi is unavailable, use deploy_file_to_board() instead (USB fallback).
@@ -269,12 +272,11 @@ def deploy_ota_wifi(host: str, local_path: str, remote_path: str, password: str)
     Returns {"error": error_code, "detail": ...} on other failures.
 
     Args:
-        host:        Board's WiFi IP address or hostname, e.g. "192.168.1.42" or "esp32.local"
+        host:        Board's WiFi IP address or hostname, e.g. "192.168.1.42" or "s3-esp32-983dae.local"
         local_path:  Absolute path to local file to upload (max 200KB)
         remote_path: Destination path on board, e.g. "/main.py"
-        password:    WebREPL password (passed through to subprocess; never stored)
     """
-    return _deploy_ota_wifi(host, local_path, remote_path, password)
+    return _deploy_ota_wifi(host, local_path, remote_path)
 
 
 @mcp.tool()
