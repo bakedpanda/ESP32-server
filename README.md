@@ -23,7 +23,7 @@ All capabilities are exposed as MCP tools — Claude calls them directly, no cop
 
 **Quick setup (recommended)**
 
-Run the setup script on your Pi. It handles everything: clones the repo, creates a virtualenv, installs dependencies, adds you to the `dialout` group, prompts for WiFi credentials, and installs+starts the systemd service.
+Run the setup script on your Pi. It handles everything: clones the repo, creates a virtualenv, installs dependencies, adds you to the `dialout` group, prompts for WiFi credentials, generates a WebREPL password automatically, and installs+starts the systemd service.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/bakedpanda/esp32-station/main/setup.sh | bash
@@ -37,6 +37,12 @@ bash esp32-station/setup.sh
 ```
 
 The script prints the `claude mcp add` command at the end — copy-paste it on your main machine to register the server.
+
+The WebREPL password is generated automatically and stored in `/etc/esp32-station/wifi.json`. If you ever need it (e.g. connecting to WebREPL manually from a browser), look it up with:
+
+```bash
+sudo cat /etc/esp32-station/wifi.json
+```
 
 **Manual setup (fallback)**
 
@@ -66,6 +72,8 @@ sudo mkdir -p /etc/esp32-station
 sudo tee /etc/esp32-station/wifi.json << 'EOF'
 {"ssid": "YOUR_SSID", "password": "YOUR_WIFI_PASSWORD", "webrepl_password": "YOUR_WEBREPL_PASS"}
 EOF
+# WebREPL password can be anything — pick something or generate one:
+# python3 -c "import secrets, string; print(''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12)))"
 sudo chmod 600 /etc/esp32-station/wifi.json
 ```
 
