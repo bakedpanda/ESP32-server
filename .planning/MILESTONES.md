@@ -19,3 +19,19 @@
 - Two new @mcp.tool() registrations (deploy_ota_wifi, pull_and_deploy_github) wired into mcp_server.py completing Phase 3 with 11 total tools
 
 ---
+
+## v1.1 Provisioning & Onboarding (Shipped: 2026-03-30)
+
+**Phases completed:** 5 phases (4–8)
+
+**Key accomplishments:**
+
+- DTR/RTS hardware reset via pyserial; fallback message when reset fails; all esptool calls enforce explicit --chip flag
+- get_board_status and check_board_health MCP tools (firmware version, WiFi, IP, free mem/storage, hostname, health flag)
+- mDNS board discovery via python-zeroconf
+- Always-erase flash workflow; deploy_boot_config with Pi-local WiFi credentials (never in tool calls)
+- setup.sh: idempotent one-command Pi onboarding — clones repo, venv, dialout group, credentials prompt (with confirmation), systemd service, prints MCP registration command
+- read_board_serial rewritten to use direct pyserial (no mpremote) — captures live output without interrupting the board
+- 42/42 UAT items validated on real hardware (XIAO ESP32-S3): full provisioning workflow, fresh Pi install, idempotency re-run, all error paths
+
+---

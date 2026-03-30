@@ -8,7 +8,7 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** -- Phases 1-3 (shipped 2026-03-29)
-- 🚧 **v1.1 Provisioning & Onboarding** -- Phases 4-7 (in progress)
+- ✅ **v1.1 Provisioning & Onboarding** -- Phases 4-8 (shipped 2026-03-30)
 
 ## Phases
 
@@ -21,7 +21,7 @@
 
 </details>
 
-### 🚧 v1.1 Provisioning & Onboarding (In Progress)
+### ✅ v1.1 Provisioning & Onboarding (SHIPPED 2026-03-30)
 
 **Milestone Goal:** Seamless path from raw/used ESP32 to running code, reliable resets, one-command Pi setup, and v1.0 tech debt cleanup.
 
@@ -29,7 +29,7 @@
 - [x] **Phase 5: Board Status** - Query board health, firmware, WiFi, and resource usage (completed 2026-03-29)
 - [x] **Phase 6: Provisioning** - Always-erase flash, WiFi config deployment, clear user guidance (completed 2026-03-29)
 - [x] **Phase 7: Setup & Onboarding** - One-command Pi setup script and MCP registration docs
-- [ ] **Phase 8: End-to-End UAT** - Full manual validation on real hardware: all 15 MCP tools, provisioning workflow, and fresh Pi install via setup.sh
+- [x] **Phase 8: End-to-End UAT** - Full manual validation on real hardware: all 15 MCP tools, provisioning workflow, and fresh Pi install via setup.sh
 
 ## Phase Details
 
@@ -116,7 +116,7 @@ Phases execute in numeric order: 4 -> 5 -> 6 -> 7 -> 8
 | 5. Board Status | v1.1 | 3/3 | Complete | 2026-03-29 |
 | 6. Provisioning | v1.1 | 2/2 | Complete   | 2026-03-29 |
 | 7. Setup & Onboarding | v1.1 | 3/3 | Complete | 2026-03-30 |
-| 8. End-to-End UAT | v1.1 | 0/0 | Planned | - |
+| 8. End-to-End UAT | v1.1 | 0/0 | Complete | 2026-03-30 |
 
 ---
 
