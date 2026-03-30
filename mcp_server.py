@@ -20,7 +20,22 @@ from tools.board_status import get_status as _get_status, check_health as _check
 from tools.mdns_discovery import discover_boards as _discover_boards
 from tools.boot_deploy import deploy_boot_config as _deploy_boot_config
 
-mcp = FastMCP("esp32-station", host="0.0.0.0", port=8000)
+TOPOLOGY = """
+IMPORTANT — understand this topology before using any tool:
+
+- THIS SERVER runs on a Raspberry Pi (the "Pi"), not on the user's main machine.
+- All tool calls execute ON THE PI. File paths, serial ports, and subprocesses are all Pi-side.
+- ESP32 boards connect via USB to the PI — not to the user's machine.
+- The user runs Claude Code on their MAIN MACHINE and talks to this server over the LAN.
+- "local_path" in any tool always means a path on the Pi's filesystem.
+- To write a file and deploy it: write the file to the Pi first (e.g. /tmp/main.py),
+  then call deploy_file_to_board or deploy_ota_wifi with that Pi-side path.
+- Never assume a file exists on the Pi just because the user mentions it — create it first.
+- WiFi credentials are stored on the Pi at /etc/esp32-station/wifi.json and are never
+  passed as tool parameters.
+"""
+
+mcp = FastMCP("esp32-station", host="0.0.0.0", port=8000, instructions=TOPOLOGY)
 
 
 @mcp.tool()
